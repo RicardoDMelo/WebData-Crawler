@@ -1,0 +1,8 @@
+{
+  "name": "Crawl-Service",
+  "description": "A service for OpenGraph",
+  "repository": "https://github.com/ThyagoRibeiro/PromoDev",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "loopback", "opengraph"],
+  "image": "heroku/nodejs"
+}
