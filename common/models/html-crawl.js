@@ -118,6 +118,7 @@ module.exports = function (HtmlCrawl) {
                                     }
 
                                 } catch (ex) {
+                                    logger.error(imgCount + '(' + extension + '): ' + imgUrl);
                                     logger.error(ex);
                                     logger.error('Image type unsupported.');
                                 }
