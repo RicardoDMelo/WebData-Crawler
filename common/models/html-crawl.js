@@ -95,7 +95,6 @@ module.exports = function (HtmlCrawl) {
                             response.on('data', function (chunk) {
                                 chunks.push(chunk);
                             }).on('end', function () {
-                                imgCount++;
                                 try {
                                     var ppc = 0;
                                     var img = getImageSize(chunks);
@@ -116,8 +115,10 @@ module.exports = function (HtmlCrawl) {
                                         if (ppc <= 5)
                                             og.image = imgUrl;
                                     }
+                                    imgCount++;
 
                                 } catch (ex) {
+                                    imgCount++;
                                     logger.error(imgCount + '(' + extension + '): ' + imgUrl);
                                     logger.error(ex);
                                     logger.error('Image type unsupported.');
