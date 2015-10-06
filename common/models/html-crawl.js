@@ -34,7 +34,7 @@ module.exports = function (HtmlCrawl) {
 
 
         var sendData = function (og) {
-            console.log('teste');
+            logger.info('teste');
             if (og.image && og.image.constructor === Array) {
                 og.image = _.uniq(og.image);
             }
@@ -97,7 +97,6 @@ module.exports = function (HtmlCrawl) {
                             }).on('end', function () {
                                 imgCount++;
                                 try {
-                                    console.log(imgUrl);
                                     var ppc = 0;
                                     var img = getImageSize(chunks);
 
@@ -119,13 +118,12 @@ module.exports = function (HtmlCrawl) {
                                     }
 
                                 } catch (ex) {
+                                    logger.error(ex);
                                     logger.error('Image type unsupported.');
                                 }
 
                                 if (imgCount == imgQtd) {
                                     if (!og.image) og.image = imgMax;
-
-                                    console.log('info');
                                     deferred.resolve();
                                 }
                             });
