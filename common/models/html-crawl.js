@@ -97,8 +97,7 @@ module.exports = function (HtmlCrawl) {
                             }).on('end', function () {
                                 imgCount++;
                                 try {
-                                    console.log(imgQtd);
-                                    console.log(imgCount);
+                                    console.log(imgUrl);
                                     var ppc = 0;
                                     var img = getImageSize(chunks);
 
