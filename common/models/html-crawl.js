@@ -34,8 +34,11 @@ module.exports = function (HtmlCrawl) {
 
 
         var sendData = function (og) {
-            if (og.image.constructor === Array)
+            console.log('teste');
+            if (og.image && og.image.constructor === Array) {
                 og.image = _.uniq(og.image);
+            }
+            console.log(og);
             callback(null, og);
             logger.info('Data parsed, returning openGraph');
             logger.info('-----------------------------------------------------------');
@@ -83,55 +86,55 @@ module.exports = function (HtmlCrawl) {
                     }
 
                     switch (extension) {
-                        case 'jpg':
-                        case 'jpeg':
-                        case 'png':
-                        case 'gif':
-                        case 'bmp':
-                            var req = http.get(options, function (response) {
-                                var chunks = [];
-                                response.on('data', function (chunk) {
-                                    chunks.push(chunk);
-                                }).on('end', function () {
-                                    imgCount++;
-                                    try {
-                                        var ppc = 0;
-                                        var img = getImageSize(chunks);
-
-                                        var area = img.width * img.height;
-
-                                        //Check bigger image
-                                        if (area >= areaMax) {
-                                            imgMax = imgUrl;
-                                            areaMax = area;
-
-                                            if (img.width > img.height)
-                                                ppc = img.width / img.height;
-                                            else
-                                                ppc = img.height / img.width;
-
-                                            //Maximum 5:1 relationship
-                                            if (ppc <= 5)
-                                                og.image = imgUrl;
-                                        }
-
-                                    } catch (ex) {
-                                        logger.error('Image type unsupported.');
-                                    }
-
-                                    if (imgCount == imgQtd) {
-                                        if (!og.image) og.image = imgMax;
-                                        deferred.resolve();
-                                    }
-                                });
-                            });
-                            req.on('error', function (e) {
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'gif':
+                    case 'bmp':
+                        var req = http.get(options, function (response) {
+                            var chunks = [];
+                            response.on('data', function (chunk) {
+                                chunks.push(chunk);
+                            }).on('end', function () {
                                 imgCount++;
+                                try {
+                                    var ppc = 0;
+                                    var img = getImageSize(chunks);
+
+                                    var area = img.width * img.height;
+
+                                    //Check bigger image
+                                    if (area >= areaMax) {
+                                        imgMax = imgUrl;
+                                        areaMax = area;
+
+                                        if (img.width > img.height)
+                                            ppc = img.width / img.height;
+                                        else
+                                            ppc = img.height / img.width;
+
+                                        //Maximum 5:1 relationship
+                                        if (ppc <= 5)
+                                            og.image = imgUrl;
+                                    }
+
+                                } catch (ex) {
+                                    logger.error('Image type unsupported.');
+                                }
+
+                                if (imgCount == imgQtd) {
+                                    if (!og.image) og.image = imgMax;
+                                    deferred.resolve();
+                                }
                             });
-                            break;
-                        default:
+                        });
+                        req.on('error', function (e) {
                             imgCount++;
-                            break;
+                        });
+                        break;
+                    default:
+                        imgCount++;
+                        break;
                     }
                 }
             });
