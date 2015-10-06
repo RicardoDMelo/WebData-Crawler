@@ -35,11 +35,9 @@ module.exports = function (HtmlCrawl) {
 
         var sendData = function (og) {
             console.log('teste');
-            if (og.image.constructor === Array){
+            if (og.image && og.image.constructor === Array){
                 og.image = _.uniq(og.image);
             }
-                
-                                        console.log(og);
             callback(null, og);
             logger.info('Data parsed, returning openGraph');
             logger.info('-----------------------------------------------------------');
