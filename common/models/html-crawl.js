@@ -1,4 +1,3 @@
-var logger = require('winston');
 var request = require('request');
 var cheerio = require('cheerio');
 var q = require('q');
@@ -7,6 +6,10 @@ var urlParse = require('url-parse');
 var http = require('http');
 var sizeOf = require('image-size');
 var _ = require('underscore');
+var Logger = require('le_node');
+var log = new Logger({
+  token:'70874635-15a5-42ba-b82a-dbf7c63d0fbd'
+});
 
 //TODO sanitize img urls
 
@@ -39,8 +42,8 @@ module.exports = function (HtmlCrawl) {
                 og.image = _.uniq(og.image);
             }
             callback(null, og);
-            logger.info('Data parsed, returning openGraph');
-            logger.info('-----------------------------------------------------------');
+            log.info('Data parsed, returning openGraph');
+            log.info('-----------------------------------------------------------');
         };
 
         //Get image properties
@@ -119,7 +122,7 @@ module.exports = function (HtmlCrawl) {
                                     }
 
                                 } catch (ex) {
-                                    logger.error('Image type unsupported.');
+                                    log.error('Image type unsupported.');
                                 }
 
                                 if (imgCount == imgQtd) {
@@ -142,7 +145,7 @@ module.exports = function (HtmlCrawl) {
             });
         }
 
-        logger.info('Getting data from ' + url);
+        log.info('Getting data from ' + url);
 
         //Sanitize Url
         if (url && !url.match(/^http([s]?):\/\/.*/)) {
@@ -152,7 +155,7 @@ module.exports = function (HtmlCrawl) {
         request(url, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 try {
-                    logger.info('Data caught, parsing html');
+                    log.info('Data caught, parsing html');
                     var og = {
                         title: '',
                         type: '',
@@ -167,7 +170,7 @@ module.exports = function (HtmlCrawl) {
 
                     if ($("meta").is("[property='og:title']") || $("meta").is("[property='og:site_name']")) {
                         //Get OpenGraph
-                        logger.info('OpenGraph identified');
+                        log.info('OpenGraph identified');
 
                         og.title = $("meta[property='og:title']").attr('content') || $("meta[property='og:site_name']").attr('content');
                         og.type = $("meta[property='og:type']").attr('content');
@@ -178,19 +181,19 @@ module.exports = function (HtmlCrawl) {
 
                     } else if ($("link").is("[rel='image_src']") && $("link").is("[rel='canonical']")) {
                         //Get Image_Src
-                        logger.info('Image_src identified');
+                        log.info('Image_src identified');
                         if (!imgarr)
                             og.image = $("link[rel='image_src']").attr('href');
 
                     } else if ($("link").is("[rel='apple-touch-icon-precomposed']")) {
                         //Get Apple Icon
-                        logger.info('Apple Icon identified');
+                        log.info('Apple Icon identified');
                         if (!imgarr)
                             og.image = $("link[rel='apple-touch-icon-precomposed']").attr('href');
 
                     } else if ($("meta").is("[name='msapplication-TileImage']")) {
                         //Get MSApplication
-                        logger.info('MSApplication identified');
+                        log.info('MSApplication identified');
                         if (!imgarr)
                             og.image = $("meta[name='msapplication-TileImage']").attr('content');
                     }
@@ -199,7 +202,7 @@ module.exports = function (HtmlCrawl) {
 
 
                     //Populate with generics
-                    logger.info('Verifying generic data');
+                    log.info('Verifying generic data');
                     if (!og.title) og.title = $("meta[name='application-name']").attr('content') || $("title").html() || '';
                     if (!og.description) og.description = $("meta[name='Description']").attr('content') || $("meta[name='description']").attr('content') || '';
                     if (!og.url) og.url = $("link[rel='canonical']").attr('href') || url;
@@ -219,10 +222,10 @@ module.exports = function (HtmlCrawl) {
                         sendData(og);
 
                 } catch (ex) {
-                    logger.error('Error on parsing data.', ex);
+                    log.error('Error on parsing data.', ex);
                 }
             } else {
-                logger.error('Error on making request to ' + url, error);
+                log.error('Error on making request to ' + url, error);
             }
         })
     };
@@ -246,7 +249,7 @@ module.exports = function (HtmlCrawl) {
         }
 
 
-        logger.info('Getting data from ' + url);
+        log.info('Getting data from ' + url);
 
         //Sanitize Url
         if (url && !url.match(/^http([s]?):\/\/.*/)) {
@@ -256,16 +259,16 @@ module.exports = function (HtmlCrawl) {
         request(url, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 try {
-                    logger.info('Data caught, parsing html');
+                    log.info('Data caught, parsing html');
                     //Load JQuery
                     $ = cheerio.load(body);
                     response = getArrImage($, url);;
                     callback(null, response);
                 } catch (ex) {
-                    logger.error('Error on parsing data.', ex);
+                    log.error('Error on parsing data.', ex);
                 }
             } else {
-                logger.error('Error on making request to ' + url, error);
+                log.error('Error on making request to ' + url, error);
             }
         })
 
