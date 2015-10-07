@@ -1,5 +1,5 @@
 {
-  "name": "Crawl-Service",
+  "name": "WebData-Crawler",
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "cors": "^2.5.2",
     "http": "0.0.0",
     "image-size": "^0.3.5",
+    "le_node": "^1.1.0",
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^2.1.0",
@@ -30,5 +31,5 @@
     "type": "",
     "url": ""
   },
-  "description": "Crawl-Service"
+  "description": "A service for crawling the web"
 }

@@ -1,8 +1,8 @@
 {
-  "name": "Crawl-Service",
-  "description": "A service for OpenGraph",
-  "repository": "https://github.com/ThyagoRibeiro/PromoDev",
+  "name": "WebData-Crawler",
+  "description": "A service for crawling the web",
+  "repository": "https://github.com/RicardoDMelo/WebData-Crawler",
   "logo": "http://node-js-sample.herokuapp.com/node.svg",
-  "keywords": ["node", "loopback", "opengraph"],
+  "keywords": ["web", "crawler", "data"],
   "image": "heroku/nodejs"
 }
