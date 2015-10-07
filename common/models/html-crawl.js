@@ -85,57 +85,56 @@ module.exports = function (HtmlCrawl) {
                     }
 
                     switch (extension) {
-                    case 'jpg':
-                    case 'jpeg':
-                    case 'png':
-                    case 'gif':
-                    case 'bmp':
-                        var req = http.get(options, function (response) {
-                            var chunks = [];
-                            response.on('data', function (chunk) {
-                                chunks.push(chunk);
-                            }).on('end', function () {
-                                try {
-                                    var ppc = 0;
-                                    var img = getImageSize(chunks);
+                        case 'jpg':
+                        case 'jpeg':
+                        case 'png':
+                        case 'gif':
+                        case 'bmp':
+                            var req = http.get(options, function (response) {
+                                var chunks = [];
+                                response.on('data', function (chunk) {
+                                    chunks.push(chunk);
+                                }).on('end', function () {
+                                    imgCount++;
+                                    try {
+                                        var ppc = 0;
+                                        var img = getImageSize(chunks);
 
-                                    var area = img.width * img.height;
+                                        var area = img.width * img.height;
 
-                                    //Check bigger image
-                                    if (area >= areaMax) {
-                                        imgMax = imgUrl;
-                                        areaMax = area;
+                                        //Check bigger image
+                                        if (area >= areaMax) {
+                                            imgMax = imgUrl;
+                                            areaMax = area;
 
-                                        if (img.width > img.height)
-                                            ppc = img.width / img.height;
-                                        else
-                                            ppc = img.height / img.width;
+                                            if (img.width > img.height)
+                                                ppc = img.width / img.height;
+                                            else
+                                                ppc = img.height / img.width;
 
-                                        //Maximum 5:1 relationship
-                                        if (ppc <= 5)
-                                            og.image = imgUrl;
+                                            //Maximum 5:1 relationship
+                                            if (ppc <= 5)
+                                                og.image = imgUrl;
+                                        }
+
+                                    } catch (ex) {
+                                        log.error(imgCount + '(' + extension + '): ' + imgUrl);
+                                        log.error('Image type unsupported.');
                                     }
-                                    imgCount++;
 
-                                } catch (ex) {
-                                    imgCount++;
-                                    log.error(imgCount + '(' + extension + '): ' + imgUrl);
-                                    log.error('Image type unsupported.');
-                                }
-
-                                if (imgCount == imgQtd) {
-                                    if (!og.image) og.image = imgMax;
-                                    deferred.resolve();
-                                }
+                                    if (imgCount == imgQtd) {
+                                        if (!og.image) og.image = imgMax;
+                                        deferred.resolve();
+                                    }
+                                });
                             });
-                        });
-                        req.on('error', function (e) {
+                            req.on('error', function (e) {
+                                imgCount++;
+                            });
+                            break;
+                        default:
                             imgCount++;
-                        });
-                        break;
-                    default:
-                        imgCount++;
-                        break;
+                            break;
                     }
                 }
             });
