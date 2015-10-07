@@ -30,7 +30,7 @@ module.exports = function (HtmlCrawl) {
     }
 
     //http://localhost:3000/api/HtmlCrawl/opengraph?url=&imgarr=
-    HtmlCrawl.getOpenGraph = function (url, imgarr, callback) {
+    HtmlCrawl.getData = function (url, imgarr, generic, callback) {
         var deferred = undefined;
 
         var sendData = function (og) {
@@ -173,6 +173,9 @@ module.exports = function (HtmlCrawl) {
                         url: '',
                         description: ''
                     };
+
+                    if (generic === undefined) generic = true;
+
                     //Load JQuery
                     $ = cheerio.load(body);
 
@@ -188,7 +191,7 @@ module.exports = function (HtmlCrawl) {
                         og.description = $("meta[property='og:description']").attr('content');
                         og.siteName = $("meta[property='og:site_name']").attr('content');
 
-                    } else if ($("meta").is("[property='twitter:title']") || $("meta").is("[property='twitter:url']")) {
+                    } else if ($("meta").is("[name='twitter:title']") || $("meta").is("[name='twitter:url']")) {
                         //Get Twitter data
                         log.info('Twitter data identified');
 
@@ -214,11 +217,12 @@ module.exports = function (HtmlCrawl) {
                         log.info('MSApplication identified');
                         if (!imgarr)
                             og.image = $("meta[name='msapplication-TileImage']").attr('content');
-                    } else if ($("article").has("img").length) {
+
+                    } else if ($("article").has("img").length && generic) {
                         //Get Image Article
                         log.info('Image Article identified');
                         if (!imgarr)
-                            og.image = $("article").find("img").attr('src');
+                            og.image = $("article").find("img").first().attr('src');
                     }
 
 
@@ -230,9 +234,10 @@ module.exports = function (HtmlCrawl) {
                     if (!og.url) og.url = $("link[rel='canonical']").attr('href') || url;
                     if (!og.type) og.type = 'website';
                     if (!og.image) {
-                        if (!imgarr)
-                            getOgImage(og, $, url);
-                        else
+                        if (!imgarr) {
+                            if (generic)
+                                getOgImage(og, $, url);
+                        } else
                             getArrImage(og, $, url);
                     }
                     //Send Object                  
@@ -245,9 +250,11 @@ module.exports = function (HtmlCrawl) {
 
                 } catch (ex) {
                     log.error('Error on parsing data.', ex);
+                    callback(null, 'Error on parsing data.');
                 }
             } else {
                 log.error('Error on making request to ' + url, error);
+                callback(null, 'Error on making request to ' + url);
             }
         })
     };
@@ -290,9 +297,11 @@ module.exports = function (HtmlCrawl) {
                     callback(null, response);
                 } catch (ex) {
                     log.error('Error on parsing data.', ex);
+                    callback(null, 'Error on parsing data.');
                 }
             } else {
                 log.error('Error on making request to ' + url, error);
+                callback(null, 'Error on making request to ' + url);
             }
         })
 
@@ -300,9 +309,9 @@ module.exports = function (HtmlCrawl) {
     };
 
     HtmlCrawl.remoteMethod(
-        'getOpenGraph', {
+        'getData', {
             http: {
-                path: '/opengraph',
+                path: '/webdata',
                 verb: 'get'
             },
             accepts: [
@@ -313,10 +322,14 @@ module.exports = function (HtmlCrawl) {
                 {
                     arg: 'imgarr',
                     type: 'boolean'
+                },
+                {
+                    arg: 'generic',
+                    type: 'boolean'
                 }
             ],
             returns: {
-                arg: 'openGraph',
+                arg: 'webdata',
                 type: 'Object'
             }
         }
