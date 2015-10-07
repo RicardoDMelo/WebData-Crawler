@@ -6,10 +6,7 @@ var urlParse = require('url-parse');
 var http = require('http');
 var sizeOf = require('image-size');
 var _ = require('underscore');
-var Logger = require('le_node');
-var log = new Logger({
-  token:'70874635-15a5-42ba-b82a-dbf7c63d0fbd'
-});
+var log = require('winston');
 
 //TODO sanitize img urls
 
