@@ -85,65 +85,65 @@ module.exports = function (HtmlCrawl) {
 
 
                     switch (extension) {
-                        case 'jpg':
-                        case 'jpeg':
-                        case 'png':
-                        case 'gif':
-                        case 'bmp':
-                            var req = http.get(options, function (response) {
-                                var chunks = [];
-                                response.on('data', function (chunk) {
-                                    chunks.push(chunk);
-                                }).on('end', function () {
-                                    try {
-                                        var ppc = 0;
-                                        var img = getImageSize(chunks);
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'gif':
+                    case 'bmp':
+                        var req = http.get(options, function (response) {
+                            var chunks = [];
+                            response.on('data', function (chunk) {
+                                chunks.push(chunk);
+                            }).on('end', function () {
+                                try {
+                                    var ppc = 0;
+                                    var img = getImageSize(chunks);
 
-                                        var area = img.width * img.height;
+                                    var area = img.width * img.height;
 
-                                        //Check bigger image
-                                        if (area >= areaMax) {
-                                            imgMax = imgUrl;
-                                            areaMax = area;
+                                    //Check bigger image
+                                    if (area >= areaMax) {
+                                        imgMax = imgUrl;
+                                        areaMax = area;
 
-                                            if (img.width > img.height)
-                                                ppc = img.width / img.height;
-                                            else
-                                                ppc = img.height / img.width;
+                                        if (img.width > img.height)
+                                            ppc = img.width / img.height;
+                                        else
+                                            ppc = img.height / img.width;
 
-                                            //Maximum 5:1 relationship
-                                            if (ppc <= 5)
-                                                og.image = imgUrl;
-                                        }
-
-                                    } catch (ex) {
-                                        //log.error(imgCount + '(' + extension + '): ' + imgUrl);
-                                        //log.error('Image type unsupported.');
+                                        //Maximum 5:1 relationship
+                                        if (ppc <= 5)
+                                            og.image = imgUrl;
                                     }
 
-                                    imgCount++;
-                                    if (imgCount == imgQtd) {
-                                        if (!og.image) og.image = imgMax;
-                                        deferred.resolve();
-                                    }
-                                });
-                            });
-                            req.on('error', function (e) {
+                                } catch (ex) {
+                                    //log.error(imgCount + '(' + extension + '): ' + imgUrl);
+                                    //log.error('Image type unsupported.');
+                                }
+
                                 imgCount++;
-                                log.error(e);
                                 if (imgCount == imgQtd) {
                                     if (!og.image) og.image = imgMax;
                                     deferred.resolve();
                                 }
                             });
-                            break;
-                        default:
+                        });
+                        req.on('error', function (e) {
                             imgCount++;
+                            log.error(e);
                             if (imgCount == imgQtd) {
                                 if (!og.image) og.image = imgMax;
                                 deferred.resolve();
                             }
-                            break;
+                        });
+                        break;
+                    default:
+                        imgCount++;
+                        if (imgCount == imgQtd) {
+                            if (!og.image) og.image = imgMax;
+                            deferred.resolve();
+                        }
+                        break;
                     }
                 } else {
                     imgCount++;
@@ -176,8 +176,6 @@ module.exports = function (HtmlCrawl) {
                     //Load JQuery
                     $ = cheerio.load(body);
 
-
-
                     if ($("meta").is("[property='og:title']") || $("meta").is("[property='og:site_name']")) {
                         //Get OpenGraph
                         log.info('OpenGraph identified');
@@ -188,6 +186,16 @@ module.exports = function (HtmlCrawl) {
                             og.image = $("meta[property='og:image']").attr('content');
                         og.url = $("meta[property='og:url']").attr('content');
                         og.description = $("meta[property='og:description']").attr('content');
+                        og.siteName = $("meta[property='og:site_name']").attr('content');
+
+                    } else if ($("meta").is("[property='twitter:title']") || $("meta").is("[property='twitter:url']")) {
+                        //Get Twitter data
+                        log.info('Twitter data identified');
+
+                        og.title = $("meta[property='twitter:title']").attr('content') || $("meta[property='twitter:site']").attr('content');
+                        og.url = $("meta[property='twitter:url']").attr('content');
+                        if (!imgarr)
+                            og.image = $("meta[property='twitter:image']").attr('content');
 
                     } else if ($("link").is("[rel='image_src']") && $("link").is("[rel='canonical']")) {
                         //Get Image_Src
@@ -206,8 +214,12 @@ module.exports = function (HtmlCrawl) {
                         log.info('MSApplication identified');
                         if (!imgarr)
                             og.image = $("meta[name='msapplication-TileImage']").attr('content');
+                    } else if ($("article").has("img").length) {
+                        //Get Image Article
+                        log.info('Image Article identified');
+                        if (!imgarr)
+                            og.image = $("article").find("img").attr('src');
                     }
-
 
 
 
