@@ -13,16 +13,17 @@ var log = require('winston');
 module.exports = function (HtmlCrawl) {
 
 
-    var sanitizeUrl = function (url, domainUrl) {
+    var sanitizeUrl = function (url, domainUrl, maintainProt) {
         var urlp = new urlParse(url);
         var domainUrlp = new urlParse(domainUrl);
 
         //find & remove protocol (http, ftp, etc.) and get domain
-        if (urlp.protocol == 'https:') {
-            urlp.set('protocol', 'http:');
-        } else if (urlp.protocol != 'http:') {
+
+        if (urlp.protocol != 'http:' && urlp.protocol != 'https:') {
             if (!urlp.protocol && url.indexOf('./') == -1 && url.indexOf('/') != 0) urlp = new urlParse('./' + url);
             urlp.set('hostname', domainUrlp.hostname);
+        }
+        if (urlp.protocol == 'https:' && maintainProt !== true) {
             urlp.set('protocol', 'http:');
         }
         return urlp.href;
@@ -32,15 +33,12 @@ module.exports = function (HtmlCrawl) {
     HtmlCrawl.getOpenGraph = function (url, imgarr, callback) {
         var deferred = undefined;
 
-
         var sendData = function (og) {
-            logger.info('teste');
             if (og.image && og.image.constructor === Array) {
                 og.image = _.uniq(og.image);
             }
             callback(null, og);
             log.info('Data parsed, returning openGraph');
-            log.info('-----------------------------------------------------------');
         };
 
         //Get image properties
@@ -56,7 +54,7 @@ module.exports = function (HtmlCrawl) {
             $("img").each(function (i, elem) {
                 var imgUrl = $(this).attr('src');
                 if (imgUrl) {
-                    imgUrl = sanitizeUrl(imgUrl, url);
+                    imgUrl = sanitizeUrl(imgUrl, url, true);
                     if (!og.image) og.image = [];
                     og.image.push(imgUrl);
                 }
@@ -73,6 +71,7 @@ module.exports = function (HtmlCrawl) {
             $("img").each(function (i, elem) {
                 var imgUrl = $(this).attr('src');
                 if (imgUrl) {
+
                     imgUrl = sanitizeUrl(imgUrl, url);
                     var options = urlLib.parse(imgUrl);
 
@@ -83,6 +82,7 @@ module.exports = function (HtmlCrawl) {
                     } else {
                         extension = extension.toLowerCase();
                     }
+
 
                     switch (extension) {
                         case 'jpg':
@@ -95,7 +95,6 @@ module.exports = function (HtmlCrawl) {
                                 response.on('data', function (chunk) {
                                     chunks.push(chunk);
                                 }).on('end', function () {
-                                    imgCount++;
                                     try {
                                         var ppc = 0;
                                         var img = getImageSize(chunks);
@@ -118,10 +117,11 @@ module.exports = function (HtmlCrawl) {
                                         }
 
                                     } catch (ex) {
-                                        log.error(imgCount + '(' + extension + '): ' + imgUrl);
-                                        log.error('Image type unsupported.');
+                                        //log.error(imgCount + '(' + extension + '): ' + imgUrl);
+                                        //log.error('Image type unsupported.');
                                     }
 
+                                    imgCount++;
                                     if (imgCount == imgQtd) {
                                         if (!og.image) og.image = imgMax;
                                         deferred.resolve();
@@ -130,11 +130,26 @@ module.exports = function (HtmlCrawl) {
                             });
                             req.on('error', function (e) {
                                 imgCount++;
+                                log.error(e);
+                                if (imgCount == imgQtd) {
+                                    if (!og.image) og.image = imgMax;
+                                    deferred.resolve();
+                                }
                             });
                             break;
                         default:
                             imgCount++;
+                            if (imgCount == imgQtd) {
+                                if (!og.image) og.image = imgMax;
+                                deferred.resolve();
+                            }
                             break;
+                    }
+                } else {
+                    imgCount++;
+                    if (imgCount == imgQtd) {
+                        if (!og.image) og.image = imgMax;
+                        deferred.resolve();
                     }
                 }
             });
@@ -230,11 +245,12 @@ module.exports = function (HtmlCrawl) {
 
         var getArrImage = function ($, url) {
             var imgArr = [];
-            //Find greatest image
+            log.info('Getting images');
+            //Find images
             $("img").each(function (i, elem) {
                 var imgUrl = $(this).attr('src');
                 if (imgUrl) {
-                    imgUrl = sanitizeUrl(imgUrl, url);
+                    imgUrl = sanitizeUrl(imgUrl, url, true);
                     imgArr.push(imgUrl);
                 }
             });
@@ -257,7 +273,8 @@ module.exports = function (HtmlCrawl) {
                     log.info('Data caught, parsing html');
                     //Load JQuery
                     $ = cheerio.load(body);
-                    response = getArrImage($, url);;
+                    response = getArrImage($, url);
+                    log.info('Data parsed, returning images');
                     callback(null, response);
                 } catch (ex) {
                     log.error('Error on parsing data.', ex);
