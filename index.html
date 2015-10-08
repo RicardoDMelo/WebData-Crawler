@@ -29,7 +29,7 @@
     <meta name="msapplication-TileColor" content="#00886C">
     <meta name="msapplication-TileImage" content="images/icons/ms-icon-144x144.png">
     <meta name="theme-color" content="#00886C">
-    
+
     <title>WebData Crawler</title>
 </head>
 
@@ -73,7 +73,7 @@
             <p>To use this crawler is really simple. There are two options.</p>
 
             <h3>
-<a id="getwebdata" class="anchor" href="#getwebdata" aria-hidden="true"><span class="octicon octicon-link"></span></a>GetWebData</h3>
+<a id="getwebdata" class="anchor" href="#getwebdata" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get WebData</h3>
 
             <p><code>https://webdata-crawler.p.mashape.com/api/HtmlCrawl/webdata?url=[string]&amp;imgarr=[boolean]&amp;generic=[boolean]</code>
                 <br> This service gets a json object with data from the url you provided.</p>
@@ -97,12 +97,22 @@
 
             <ul>
                 <li>webData: JSON object. Can contain any of these properties: title, type, image(can be an array, depending on imgarr parameter), url, description, siteName.
-                    <br>
                 </li>
             </ul>
+<pre class="code-example">{
+  "webdata": {
+    "title": "WebData Crawler",
+    "type": "website",
+    "image": "http://webdatacrawler.com/images/logo-min.jpg",
+    "url": "http://webdatacrawler.com",
+    "description": "This crawler will try to get any data possible from a given url, like title, description and images associated.",
+    "siteName": "WebData Crawler",
+    "icon": "http://webdatacrawler.com/images/icons/android-icon-192x192.png"
+  }
+}</pre>
 
             <h3>
-<a id="getimages" class="anchor" href="#getimages" aria-hidden="true"><span class="octicon octicon-link"></span></a>GetImages</h3>
+<a id="getimages" class="anchor" href="#getimages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get Images</h3>
 
             <p><code>https://webdata-crawler.p.mashape.com/api/HtmlCrawl/images?url=[string]</code>
                 <br> This service gets an array of images fetched from all the img tags retrieved by the provided url</p>
@@ -121,9 +131,15 @@
 
             <ul>
                 <li>imgs: array. An array containing all found images.
-                    <br>
                 </li>
             </ul>
+
+                <pre class="code-example">{
+  "imgs": [
+    "http://webdatacrawler.com/images/logo-min.jpg"
+  ]
+}                </pre>
+
 
             <h2>
 <a id="doubts-bugs" class="anchor" href="#doubts-bugs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Doubts? Bugs?</h2>
