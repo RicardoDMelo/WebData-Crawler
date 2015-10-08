@@ -71,7 +71,6 @@ module.exports = function (HtmlCrawl) {
             $("img").each(function (i, elem) {
                 var imgUrl = $(this).attr('src');
                 if (imgUrl) {
-
                     imgUrl = sanitizeUrl(imgUrl, url);
                     var options = urlLib.parse(imgUrl);
 
@@ -82,68 +81,66 @@ module.exports = function (HtmlCrawl) {
                     } else {
                         extension = extension.toLowerCase();
                     }
-
-
                     switch (extension) {
-                        case 'jpg':
-                        case 'jpeg':
-                        case 'png':
-                        case 'gif':
-                        case 'bmp':
-                            var req = http.get(options, function (response) {
-                                var chunks = [];
-                                response.on('data', function (chunk) {
-                                    chunks.push(chunk);
-                                }).on('end', function () {
-                                    try {
-                                        var ppc = 0;
-                                        var img = getImageSize(chunks);
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'gif':
+                    case 'bmp':
+                        var req = http.get(options, function (response) {
+                            var chunks = [];
+                            response.on('data', function (chunk) {
+                                chunks.push(chunk);
+                            }).on('end', function () {
+                                try {
+                                    var ppc = 0;
+                                    var img = getImageSize(chunks);
 
-                                        var area = img.width * img.height;
+                                    var area = img.width * img.height;
 
-                                        //Check bigger image
-                                        if (area >= areaMax) {
-                                            imgMax = imgUrl;
-                                            areaMax = area;
+                                    //Check bigger image
+                                    if (area >= areaMax) {
+                                        imgMax = imgUrl;
+                                        areaMax = area;
 
-                                            if (img.width > img.height)
-                                                ppc = img.width / img.height;
-                                            else
-                                                ppc = img.height / img.width;
+                                        if (img.width > img.height)
+                                            ppc = img.width / img.height;
+                                        else
+                                            ppc = img.height / img.width;
 
-                                            //Maximum 5:1 relationship
-                                            if (ppc <= 5)
-                                                og.image = imgUrl;
-                                        }
-
-                                    } catch (ex) {
-                                        //log.error(imgCount + '(' + extension + '): ' + imgUrl);
-                                        //log.error('Image type unsupported.');
+                                        //Maximum 5:1 relationship
+                                        if (ppc <= 5)
+                                            og.image = imgUrl;
                                     }
 
-                                    imgCount++;
-                                    if (imgCount == imgQtd) {
-                                        if (!og.image) og.image = imgMax;
-                                        deferred.resolve();
-                                    }
-                                });
-                            });
-                            req.on('error', function (e) {
+                                } catch (ex) {
+                                    //log.error(imgCount + '(' + extension + '): ' + imgUrl);
+                                    //log.error('Image type unsupported.');
+                                }
+
                                 imgCount++;
-                                log.error(e);
                                 if (imgCount == imgQtd) {
                                     if (!og.image) og.image = imgMax;
                                     deferred.resolve();
                                 }
                             });
-                            break;
-                        default:
+                        });
+                        req.on('error', function (e) {
                             imgCount++;
+                            log.error(e);
                             if (imgCount == imgQtd) {
                                 if (!og.image) og.image = imgMax;
                                 deferred.resolve();
                             }
-                            break;
+                        });
+                        break;
+                    default:
+                        imgCount++;
+                        if (imgCount == imgQtd) {
+                            if (!og.image) og.image = imgMax;
+                            deferred.resolve();
+                        }
+                        break;
                     }
                 } else {
                     imgCount++;
@@ -206,12 +203,16 @@ module.exports = function (HtmlCrawl) {
                         if (!imgarr)
                             og.image = $("link[rel='image_src']").attr('href');
 
-                    } else if ($("link").is("[rel='apple-touch-icon-precomposed']")) {
+                    } else if ($("link").is("[rel='apple-touch-icon']")) {
                         //Get Apple Icon
                         log.info('Apple Icon identified');
                         if (!imgarr)
+                            og.image = $("link[rel='apple-touch-icon']").attr('href');
+                    } else if ($("link").is("[rel='apple-touch-icon-precomposed']")) {
+                        //Get Apple Icon
+                        log.info('Apple Icon Precomposed identified');
+                        if (!imgarr)
                             og.image = $("link[rel='apple-touch-icon-precomposed']").attr('href');
-
                     } else if ($("meta").is("[name='msapplication-TileImage']")) {
                         //Get MSApplication
                         log.info('MSApplication identified');
@@ -246,11 +247,17 @@ module.exports = function (HtmlCrawl) {
                     if (!og.type) og.type = 'website';
                     if (!og.image) {
                         if (!imgarr) {
-                            if (generic)
+                            if (generic) {
+                                log.info('Getting biggest image');
                                 getOgImage(og, $, url);
-                        } else
+                            }
+                        } else {
+                            log.info('Getting array of images');
                             getArrImage(og, $, url);
+                        }
                     }
+                    if (og.image)
+                        og.image = sanitizeUrl(og.image, url, true);
                     //Send Object
                     if (deferred)
                         deferred.promise.then(function () {
