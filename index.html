@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
+<head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="WebData Crawler : This crawler will try to get any data possible from a given url, like title, description and images associated.">
@@ -9,123 +9,127 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>WebData Crawler</title>
-  </head>
+</head>
 
-  <body>
+<body>
 
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/RicardoDMelo/WebData-Crawler">View on GitHub</a>
 
-          <h1 id="project_title">WebData Crawler</h1>
-          <h2 id="project_tagline">This crawler will try to get any data possible from a given url, like title, description and images associated.</h2>
+            <h1 id="project_title"><img class="logo" src="images/logo-min.jpg">WebData Crawler</h1>
+            <h2 id="project_tagline">This crawler will try to get any data possible from a given url, like title, description and images associated.</h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/RicardoDMelo/WebData-Crawler/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/RicardoDMelo/WebData-Crawler/tarball/master">Download this project as a tar.gz file</a>
+                <a href="https://market.mashape.com/ricksmelo/webdata-crawler">
+                    <span class="download-description">Use it on Mashape!</span>
+                    <div class="mashape_link">Use it on Mashape!</div>
+                </a>
             </section>
         </header>
     </div>
 
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
-<a id="webdata-crawler" class="anchor" href="#webdata-crawler" aria-hidden="true"><span class="octicon octicon-link"></span></a>WebData Crawler</h1>
+        <section id="main_content" class="inner">
+            <p>Hello! This is a HTML crawler for retrieving website data.</p>
 
-<p>Hello! This is a HTML crawler for retrieving website data.</p>
+            <p>This crawler will try to get any data possible from a given url, and send an object as response containing all data possible.</p>
 
-<p>This crawler will try to get any data possible from a given url, and send an object as response containing all data possible.</p>
-
-<h2>
+            <h2>
 <a id="want-to-adapt-your-website" class="anchor" href="#want-to-adapt-your-website" aria-hidden="true"><span class="octicon octicon-link"></span></a>Want to adapt your website?</h2>
 
-<p>The best way to get your website to be seen by other crawlers and robots is the OpenGraph Pattern!  </p>
+            <p>The best way to get your website to be seen by other crawlers and robots is the OpenGraph Pattern! </p>
 
-<p>OpenGraph is a pattern to describe your website. Google, Facebook, Telegram and several other applications crawl your website for these information.</p>
+            <p>OpenGraph is a pattern to describe your website. Google, Facebook, Telegram and several other applications crawl your website for these information.</p>
 
-<p>To turn your websites into graph objects, <a href="http://ogp.me/">see how here!</a></p>
+            <p>To turn your websites into graph objects, <a href="http://ogp.me/">see how here!</a></p>
 
-<h2>
+            <h2>
 <a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use</h2>
 
-<p>To use this crawler is really simple. There are two options.</p>
+            <p>To use this crawler is really simple. There are two options.</p>
 
-<h3>
+            <h3>
 <a id="getwebdata" class="anchor" href="#getwebdata" aria-hidden="true"><span class="octicon octicon-link"></span></a>GetWebData</h3>
 
-<p><code>https://webdata-crawler.p.mashape.com/api/HtmlCrawl/webdata?url=[string]&amp;imgarr=[boolean]&amp;generic=[boolean]</code><br>
-This service gets a json object with data from the url you provided.</p>
+            <p><code>https://webdata-crawler.p.mashape.com/api/HtmlCrawl/webdata?url=[string]&amp;imgarr=[boolean]&amp;generic=[boolean]</code>
+                <br> This service gets a json object with data from the url you provided.</p>
 
-<h4>
+            <h4>
 <a id="params" class="anchor" href="#params" aria-hidden="true"><span class="octicon octicon-link"></span></a>Params</h4>
 
-<ul>
-<li>url [REQUIRED]: Url you want to crawl. No "hashtags" (#) on the url. Only urls that return html.<br>
-</li>
-<li>imgarr: Default is FALSE. "false" for get a single image from the url, "true" for getting all images in html.<br>
-</li>
-<li>generic: Default is TRUE. "true" will try to get a single generic image from the url if not explicitly provided at the html, ie. first image on article or biggest image on website. Using imgarr parameter ignore this feature.<br>
-</li>
-</ul>
+            <ul>
+                <li>url [REQUIRED]: Url you want to crawl. No "hashtags" (#) on the url. Only urls that return html.
+                    <br>
+                </li>
+                <li>imgarr: Default is FALSE. "false" for get a single image from the url, "true" for getting all images in html.
+                    <br>
+                </li>
+                <li>generic: Default is TRUE. "true" will try to get a single generic image from the url if not explicitly provided at the html, ie. first image on article or biggest image on website. Using imgarr parameter ignore this feature.
+                    <br>
+                </li>
+            </ul>
 
-<h4>
-<a id="response" class="anchor" href="#response" aria-hidden="true"><span class="octicon octicon-link"></span></a>Response</h4>
+            <h4><a id="response" class="anchor" href="#response" aria-hidden="true"><span class="octicon octicon-link"></span></a>Response</h4>
 
-<ul>
-<li>webData: JSON object. Can contain any of these properties: title, type, image(can be an array, depending on imgarr parameter), url, description, siteName.<br>
-</li>
-</ul>
+            <ul>
+                <li>webData: JSON object. Can contain any of these properties: title, type, image(can be an array, depending on imgarr parameter), url, description, siteName.
+                    <br>
+                </li>
+            </ul>
 
-<h3>
+            <h3>
 <a id="getimages" class="anchor" href="#getimages" aria-hidden="true"><span class="octicon octicon-link"></span></a>GetImages</h3>
 
-<p><code>https://webdata-crawler.p.mashape.com/api/HtmlCrawl/images?url=[string]</code><br>
-This service gets an array of images fetched from all the img tags retrieved by the provided url</p>
+            <p><code>https://webdata-crawler.p.mashape.com/api/HtmlCrawl/images?url=[string]</code>
+                <br> This service gets an array of images fetched from all the img tags retrieved by the provided url</p>
 
-<h4>
+            <h4>
 <a id="params-1" class="anchor" href="#params-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Params</h4>
 
-<ul>
-<li>url [REQUIRED]: Url you want to crawl. No "hashtags" (#) on the url. Only urls that return html.<br>
-</li>
-</ul>
+            <ul>
+                <li>url [REQUIRED]: Url you want to crawl. No "hashtags" (#) on the url. Only urls that return html.
+                    <br>
+                </li>
+            </ul>
 
-<h4>
+            <h4>
 <a id="response-1" class="anchor" href="#response-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Response</h4>
 
-<ul>
-<li>imgs: array. An array containing all found images.<br>
-</li>
-</ul>
+            <ul>
+                <li>imgs: array. An array containing all found images.
+                    <br>
+                </li>
+            </ul>
 
-<h2>
+            <h2>
 <a id="doubts-bugs" class="anchor" href="#doubts-bugs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Doubts? Bugs?</h2>
 
-<p>Just send me an e-mail: <a href="mailto:ricardo.d.melo@hotmail.com">ricardo.d.melo@hotmail.com</a></p>
-      </section>
+            <p>Just send me an e-mail: <a href="mailto:ricardo.d.melo@hotmail.com">ricardo.d.melo@hotmail.com</a></p>
+        </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">WebData Crawler maintained by <a href="https://github.com/RicardoDMelo">RicardoDMelo</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
-      </footer>
+        <footer class="inner">
+            <p class="copyright">WebData Crawler maintained by <a href="https://github.com/RicardoDMelo">RicardoDMelo</a></p>
+            <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+        </footer>
     </div>
 
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-68582862-1");
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-68582862-1");
             pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
+        } catch (err) {}
+    </script>
 
 
-  </body>
+</body>
+
 </html>
