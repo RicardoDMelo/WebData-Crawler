@@ -473,10 +473,38 @@ Full-Width Styles
     background-color: #B2DBD2;
 }
 
+.mashape-button {
+    width: 155px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mashape-button img {
+    margin: 0px;
+    width: 143px;
+    height: 38px;
+}
+
 
 /*******************************************************************************
 Small Device Styles
 *******************************************************************************/
+
+@media screen and (max-width: 1020px) {
+    .mashape-button {
+        width: 290px;
+        height: 80px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 10px;
+    }
+    .mashape-button img {
+        margin: 0px;
+        width: 290px;
+        height: 80px;
+    }
+}
 
 @media screen and (max-width: 480px) {
     body {

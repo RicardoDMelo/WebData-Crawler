@@ -40,10 +40,10 @@
         <header class="inner">
 
             <h1 id="project_title"><img class="logo" src="images/logo-min.jpg">WebData Crawler</h1>
-            <h2 id="project_tagline">This crawler will try to get any data possible from a given url, like title, description and images associated.</h2>
+            <h2 id="project_tagline">The easiest way to get information about a website</h2>
 
             <section id="downloads">
-                <a href="https://market.mashape.com/ricksmelo/webdata-crawler">
+                <a href="https://market.mashape.com/RicardoDMelo/webdata-crawler">
                     <span class="download-description">Use it on Mashape!</span>
                     <div class="mashape_link">Use it on Mashape!</div>
                 </a>
@@ -56,7 +56,7 @@
         <section id="main_content" class="inner">
             <p>Hello! This is a HTML crawler for retrieving website data.</p>
 
-            <p>This crawler will try to get any data possible from a given url, and send an object as response containing all data possible.</p>
+            <p>This crawler will try to get any data possible from a given url, like title, description and images associated.</p>
 
             <h2>
 <a id="want-to-adapt-your-website" class="anchor" href="#want-to-adapt-your-website" aria-hidden="true"><span class="octicon octicon-link"></span></a>Want to adapt your website?</h2>
@@ -70,13 +70,19 @@
             <h2>
 <a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use</h2>
 
+            <p>First of all, you need to subscribe to the API on Mashape.</p>
+            <div class="mashape-button">
+                <a href="https://www.mashape.com/ricardodmelo/webdata-crawler?&amp;utm_campaign=mashape5-embed&amp;utm_medium=button&amp;utm_source=webdata-crawler&amp;utm_content=anchorlink&amp;utm_term=icon-light">
+                    <img src="https://d1g84eaw0qjo7s.cloudfront.net/images/badges/badge-icon-light-9e8eba63.png" alt="Mashape">
+                </a>
+            </div>
             <p>To use this crawler is really simple. There are two options.</p>
 
             <h3>
 <a id="getwebdata" class="anchor" href="#getwebdata" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get WebData</h3>
 
-            <p><code class="url-wrap">https://webdata-crawler.p.mashape.com/api/HtmlCrawl/webdata?url=[string]&amp;imgarr=[boolean]&amp;generic=[boolean]</code>
-                <br> This service gets a json object with data from the url you provided.</p>
+            <p><code class="url-wrap">https://webdata-crawler.p.mashape.com/api/HtmlCrawl/webdata?url=[string]&amp;imgarr=[boolean]&amp;generic=[boolean]</code></p>
+            <p> This service gets a json object with data from the url you provided.</p>
 
             <h4>
 <a id="params" class="anchor" href="#params" aria-hidden="true"><span class="octicon octicon-link"></span></a>Params</h4>
@@ -99,7 +105,7 @@
                 <li>webData: JSON object. Can contain any of these properties: title, type, image(can be an array, depending on imgarr parameter), url, description, siteName.
                 </li>
             </ul>
-            <div  class="code-example">
+            <div class="code-example">
                 <code>{<br>
                       &emsp;&emsp;"webdata": {<br>
                         &emsp;&emsp;&emsp;&emsp;"title": "WebData Crawler",<br>
@@ -117,8 +123,8 @@
             <h3>
 <a id="getimages" class="anchor" href="#getimages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get Images</h3>
 
-            <p><code class="url-wrap">https://webdata-crawler.p.mashape.com/api/HtmlCrawl/images?url=[string]</code>
-                <br> This service gets an array of images fetched from all the img tags retrieved by the provided url</p>
+            <p><code class="url-wrap">https://webdata-crawler.p.mashape.com/api/HtmlCrawl/images?url=[string]</code></p>
+            <p>This service gets an array of images fetched from all the img tags retrieved by the provided url</p>
 
             <h4>
 <a id="params-1" class="anchor" href="#params-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Params</h4>
