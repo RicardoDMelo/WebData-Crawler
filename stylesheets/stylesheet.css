@@ -459,6 +459,10 @@ Full-Width Styles
     background: #212121;
 }
 
+.url-wrap {
+    word-wrap: break-word;
+}
+
 .code-example {
     background-color: #B2DBD2;
     border: #4CAB98 solid 2px;
