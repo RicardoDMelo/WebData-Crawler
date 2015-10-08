@@ -362,7 +362,8 @@ module.exports = function (HtmlCrawl) {
             },
             returns: {
                 arg: 'imgs',
-                type: 'Array'
+                type: 'Array',
+                root: true
             }
         }
     );
