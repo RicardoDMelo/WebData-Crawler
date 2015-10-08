@@ -23,7 +23,7 @@ module.exports = function (HtmlCrawl) {
             if (!urlp.protocol && url.indexOf('./') == -1 && url.indexOf('/') != 0) urlp = new urlParse('./' + url);
             urlp.set('hostname', domainUrlp.hostname);
         }
-        if (urlp.protocol == 'https:' && maintainProt !== true) {
+        if ((urlp.protocol == 'https:' && maintainProt !== true) || !urlp.protocol) {
             urlp.set('protocol', 'http:');
         }
         return urlp.href;
@@ -85,65 +85,65 @@ module.exports = function (HtmlCrawl) {
 
 
                     switch (extension) {
-                    case 'jpg':
-                    case 'jpeg':
-                    case 'png':
-                    case 'gif':
-                    case 'bmp':
-                        var req = http.get(options, function (response) {
-                            var chunks = [];
-                            response.on('data', function (chunk) {
-                                chunks.push(chunk);
-                            }).on('end', function () {
-                                try {
-                                    var ppc = 0;
-                                    var img = getImageSize(chunks);
+                        case 'jpg':
+                        case 'jpeg':
+                        case 'png':
+                        case 'gif':
+                        case 'bmp':
+                            var req = http.get(options, function (response) {
+                                var chunks = [];
+                                response.on('data', function (chunk) {
+                                    chunks.push(chunk);
+                                }).on('end', function () {
+                                    try {
+                                        var ppc = 0;
+                                        var img = getImageSize(chunks);
 
-                                    var area = img.width * img.height;
+                                        var area = img.width * img.height;
 
-                                    //Check bigger image
-                                    if (area >= areaMax) {
-                                        imgMax = imgUrl;
-                                        areaMax = area;
+                                        //Check bigger image
+                                        if (area >= areaMax) {
+                                            imgMax = imgUrl;
+                                            areaMax = area;
 
-                                        if (img.width > img.height)
-                                            ppc = img.width / img.height;
-                                        else
-                                            ppc = img.height / img.width;
+                                            if (img.width > img.height)
+                                                ppc = img.width / img.height;
+                                            else
+                                                ppc = img.height / img.width;
 
-                                        //Maximum 5:1 relationship
-                                        if (ppc <= 5)
-                                            og.image = imgUrl;
+                                            //Maximum 5:1 relationship
+                                            if (ppc <= 5)
+                                                og.image = imgUrl;
+                                        }
+
+                                    } catch (ex) {
+                                        //log.error(imgCount + '(' + extension + '): ' + imgUrl);
+                                        //log.error('Image type unsupported.');
                                     }
 
-                                } catch (ex) {
-                                    //log.error(imgCount + '(' + extension + '): ' + imgUrl);
-                                    //log.error('Image type unsupported.');
-                                }
-
+                                    imgCount++;
+                                    if (imgCount == imgQtd) {
+                                        if (!og.image) og.image = imgMax;
+                                        deferred.resolve();
+                                    }
+                                });
+                            });
+                            req.on('error', function (e) {
                                 imgCount++;
+                                log.error(e);
                                 if (imgCount == imgQtd) {
                                     if (!og.image) og.image = imgMax;
                                     deferred.resolve();
                                 }
                             });
-                        });
-                        req.on('error', function (e) {
+                            break;
+                        default:
                             imgCount++;
-                            log.error(e);
                             if (imgCount == imgQtd) {
                                 if (!og.image) og.image = imgMax;
                                 deferred.resolve();
                             }
-                        });
-                        break;
-                    default:
-                        imgCount++;
-                        if (imgCount == imgQtd) {
-                            if (!og.image) og.image = imgMax;
-                            deferred.resolve();
-                        }
-                        break;
+                            break;
                     }
                 } else {
                     imgCount++;
@@ -225,6 +225,17 @@ module.exports = function (HtmlCrawl) {
                             og.image = $("article").find("img").first().attr('src');
                     }
 
+                    //Get favicon
+                    var icon = undefined;
+                    if ($("link").is("[rel='icon']")) {
+                        log.info('Icon found');
+                        icon = $("link[rel='icon']").attr('href');
+                    } else if ($("link").is("[rel='shortcut icon']")) {
+                        log.info('Icon found');
+                        icon = $("link[rel='shortcut icon']").attr('href');
+                    }                    
+                    if (icon)
+                        og.icon = sanitizeUrl(icon, url, true);
 
 
                     //Populate with generics
