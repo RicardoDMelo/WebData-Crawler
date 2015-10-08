@@ -459,7 +459,14 @@ Full-Width Styles
     background: #212121;
 }
 
-.code-example {word-wrap: break-word; 
+.code-example {
+    background-color: #B2DBD2;
+    border: #4CAB98 solid 2px;
+}
+
+.code-example code {
+    word-wrap: break-word;
+    background-color: #B2DBD2;
 }
 
 
