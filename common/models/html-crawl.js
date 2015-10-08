@@ -233,7 +233,7 @@ module.exports = function (HtmlCrawl) {
                     } else if ($("link").is("[rel='shortcut icon']")) {
                         log.info('Icon found');
                         icon = $("link[rel='shortcut icon']").attr('href');
-                    }                    
+                    }
                     if (icon)
                         og.icon = sanitizeUrl(icon, url, true);
 
@@ -251,7 +251,7 @@ module.exports = function (HtmlCrawl) {
                         } else
                             getArrImage(og, $, url);
                     }
-                    //Send Object                  
+                    //Send Object
                     if (deferred)
                         deferred.promise.then(function () {
                             sendData(og);
@@ -341,7 +341,8 @@ module.exports = function (HtmlCrawl) {
             ],
             returns: {
                 arg: 'webdata',
-                type: 'Object'
+                type: 'object',
+                root: true
             }
         }
     );
