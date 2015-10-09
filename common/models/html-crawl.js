@@ -19,7 +19,7 @@ module.exports = function (HtmlCrawl) {
 
         //find & remove protocol (http, ftp, etc.) and get domain
 
-        if (urlp.protocol != 'http:' && urlp.protocol != 'https:') {
+        if (urlp.protocol != 'http:' && urlp.protocol != 'https:' && url.indexOf('//') != 0) {
             if (!urlp.protocol && url.indexOf('./') == -1 && url.indexOf('/') != 0) urlp = new urlParse('./' + url);
             urlp.set('hostname', domainUrlp.hostname);
         }
