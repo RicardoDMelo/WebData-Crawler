@@ -6,44 +6,39 @@ var urlParse = require('url-parse');
 var http = require('http');
 var sizeOf = require('image-size');
 var _ = require('underscore');
-var Logger = require('le_node');
-var log = new Logger({
-  token:'70874635-15a5-42ba-b82a-dbf7c63d0fbd'
-});
+var log = require('winston');
 
 //TODO sanitize img urls
 
 module.exports = function (HtmlCrawl) {
 
 
-    var sanitizeUrl = function (url, domainUrl) {
+    var sanitizeUrl = function (url, domainUrl, maintainProt) {
         var urlp = new urlParse(url);
         var domainUrlp = new urlParse(domainUrl);
 
         //find & remove protocol (http, ftp, etc.) and get domain
-        if (urlp.protocol == 'https:') {
-            urlp.set('protocol', 'http:');
-        } else if (urlp.protocol != 'http:') {
+
+        if (urlp.protocol != 'http:' && urlp.protocol != 'https:' && url.indexOf('//') != 0) {
             if (!urlp.protocol && url.indexOf('./') == -1 && url.indexOf('/') != 0) urlp = new urlParse('./' + url);
             urlp.set('hostname', domainUrlp.hostname);
+        }
+        if ((urlp.protocol == 'https:' && maintainProt !== true) || !urlp.protocol) {
             urlp.set('protocol', 'http:');
         }
         return urlp.href;
     }
 
     //http://localhost:3000/api/HtmlCrawl/opengraph?url=&imgarr=
-    HtmlCrawl.getOpenGraph = function (url, imgarr, callback) {
+    HtmlCrawl.getData = function (url, imgarr, generic, callback) {
         var deferred = undefined;
 
-
         var sendData = function (og) {
-            console.log('teste');
             if (og.image && og.image.constructor === Array) {
                 og.image = _.uniq(og.image);
             }
             callback(null, og);
             log.info('Data parsed, returning openGraph');
-            log.info('-----------------------------------------------------------');
         };
 
         //Get image properties
@@ -59,7 +54,7 @@ module.exports = function (HtmlCrawl) {
             $("img").each(function (i, elem) {
                 var imgUrl = $(this).attr('src');
                 if (imgUrl) {
-                    imgUrl = sanitizeUrl(imgUrl, url);
+                    imgUrl = sanitizeUrl(imgUrl, url, true);
                     if (!og.image) og.image = [];
                     og.image.push(imgUrl);
                 }
@@ -86,7 +81,6 @@ module.exports = function (HtmlCrawl) {
                     } else {
                         extension = extension.toLowerCase();
                     }
-
                     switch (extension) {
                     case 'jpg':
                     case 'jpeg':
@@ -98,9 +92,7 @@ module.exports = function (HtmlCrawl) {
                             response.on('data', function (chunk) {
                                 chunks.push(chunk);
                             }).on('end', function () {
-                                imgCount++;
                                 try {
-                                    console.log(imgUrl);
                                     var ppc = 0;
                                     var img = getImageSize(chunks);
 
@@ -122,24 +114,39 @@ module.exports = function (HtmlCrawl) {
                                     }
 
                                 } catch (ex) {
-                                    log.error('Image type unsupported.');
+                                    //log.error(imgCount + '(' + extension + '): ' + imgUrl);
+                                    //log.error('Image type unsupported.');
                                 }
 
+                                imgCount++;
                                 if (imgCount == imgQtd) {
                                     if (!og.image) og.image = imgMax;
-
-                                    console.log('info');
                                     deferred.resolve();
                                 }
                             });
                         });
                         req.on('error', function (e) {
                             imgCount++;
+                            log.error(e);
+                            if (imgCount == imgQtd) {
+                                if (!og.image) og.image = imgMax;
+                                deferred.resolve();
+                            }
                         });
                         break;
                     default:
                         imgCount++;
+                        if (imgCount == imgQtd) {
+                            if (!og.image) og.image = imgMax;
+                            deferred.resolve();
+                        }
                         break;
+                    }
+                } else {
+                    imgCount++;
+                    if (imgCount == imgQtd) {
+                        if (!og.image) og.image = imgMax;
+                        deferred.resolve();
                     }
                 }
             });
@@ -163,10 +170,11 @@ module.exports = function (HtmlCrawl) {
                         url: '',
                         description: ''
                     };
+
+                    if (generic === undefined) generic = true;
+
                     //Load JQuery
                     $ = cheerio.load(body);
-
-
 
                     if ($("meta").is("[property='og:title']") || $("meta").is("[property='og:site_name']")) {
                         //Get OpenGraph
@@ -178,6 +186,16 @@ module.exports = function (HtmlCrawl) {
                             og.image = $("meta[property='og:image']").attr('content');
                         og.url = $("meta[property='og:url']").attr('content');
                         og.description = $("meta[property='og:description']").attr('content');
+                        og.siteName = $("meta[property='og:site_name']").attr('content');
+
+                    } else if ($("meta").is("[name='twitter:title']") || $("meta").is("[name='twitter:url']")) {
+                        //Get Twitter data
+                        log.info('Twitter data identified');
+
+                        og.title = $("meta[property='twitter:title']").attr('content') || $("meta[property='twitter:site']").attr('content');
+                        og.url = $("meta[property='twitter:url']").attr('content');
+                        if (!imgarr)
+                            og.image = $("meta[property='twitter:image']").attr('content');
 
                     } else if ($("link").is("[rel='image_src']") && $("link").is("[rel='canonical']")) {
                         //Get Image_Src
@@ -185,20 +203,40 @@ module.exports = function (HtmlCrawl) {
                         if (!imgarr)
                             og.image = $("link[rel='image_src']").attr('href');
 
-                    } else if ($("link").is("[rel='apple-touch-icon-precomposed']")) {
+                    } else if ($("link").is("[rel='apple-touch-icon']")) {
                         //Get Apple Icon
                         log.info('Apple Icon identified');
                         if (!imgarr)
+                            og.image = $("link[rel='apple-touch-icon']").attr('href');
+                    } else if ($("link").is("[rel='apple-touch-icon-precomposed']")) {
+                        //Get Apple Icon
+                        log.info('Apple Icon Precomposed identified');
+                        if (!imgarr)
                             og.image = $("link[rel='apple-touch-icon-precomposed']").attr('href');
-
                     } else if ($("meta").is("[name='msapplication-TileImage']")) {
                         //Get MSApplication
                         log.info('MSApplication identified');
                         if (!imgarr)
                             og.image = $("meta[name='msapplication-TileImage']").attr('content');
+
+                    } else if ($("article").has("img").length && generic) {
+                        //Get Image Article
+                        log.info('Image Article identified');
+                        if (!imgarr)
+                            og.image = $("article").find("img").first().attr('src');
                     }
 
-
+                    //Get favicon
+                    var icon = undefined;
+                    if ($("link").is("[rel='icon']")) {
+                        log.info('Icon found');
+                        icon = $("link[rel='icon']").attr('href');
+                    } else if ($("link").is("[rel='shortcut icon']")) {
+                        log.info('Icon found');
+                        icon = $("link[rel='shortcut icon']").attr('href');
+                    }
+                    if (icon)
+                        og.icon = sanitizeUrl(icon, url, true);
 
 
                     //Populate with generics
@@ -208,12 +246,19 @@ module.exports = function (HtmlCrawl) {
                     if (!og.url) og.url = $("link[rel='canonical']").attr('href') || url;
                     if (!og.type) og.type = 'website';
                     if (!og.image) {
-                        if (!imgarr)
-                            getOgImage(og, $, url);
-                        else
+                        if (!imgarr) {
+                            if (generic) {
+                                log.info('Getting biggest image');
+                                getOgImage(og, $, url);
+                            }
+                        } else {
+                            log.info('Getting array of images');
                             getArrImage(og, $, url);
+                        }
                     }
-                    //Send Object                  
+                    if (og.image)
+                        og.image = sanitizeUrl(og.image, url, true);
+                    //Send Object
                     if (deferred)
                         deferred.promise.then(function () {
                             sendData(og);
@@ -223,9 +268,11 @@ module.exports = function (HtmlCrawl) {
 
                 } catch (ex) {
                     log.error('Error on parsing data.', ex);
+                    callback(null, 'Error on parsing data.');
                 }
             } else {
                 log.error('Error on making request to ' + url, error);
+                callback(null, 'Error on making request to ' + url);
             }
         })
     };
@@ -235,11 +282,12 @@ module.exports = function (HtmlCrawl) {
 
         var getArrImage = function ($, url) {
             var imgArr = [];
-            //Find greatest image
+            log.info('Getting images');
+            //Find images
             $("img").each(function (i, elem) {
                 var imgUrl = $(this).attr('src');
                 if (imgUrl) {
-                    imgUrl = sanitizeUrl(imgUrl, url);
+                    imgUrl = sanitizeUrl(imgUrl, url, true);
                     imgArr.push(imgUrl);
                 }
             });
@@ -262,13 +310,16 @@ module.exports = function (HtmlCrawl) {
                     log.info('Data caught, parsing html');
                     //Load JQuery
                     $ = cheerio.load(body);
-                    response = getArrImage($, url);;
+                    response = getArrImage($, url);
+                    log.info('Data parsed, returning images');
                     callback(null, response);
                 } catch (ex) {
                     log.error('Error on parsing data.', ex);
+                    callback(null, 'Error on parsing data.');
                 }
             } else {
                 log.error('Error on making request to ' + url, error);
+                callback(null, 'Error on making request to ' + url);
             }
         })
 
@@ -276,9 +327,9 @@ module.exports = function (HtmlCrawl) {
     };
 
     HtmlCrawl.remoteMethod(
-        'getOpenGraph', {
+        'getData', {
             http: {
-                path: '/opengraph',
+                path: '/webdata',
                 verb: 'get'
             },
             accepts: [
@@ -289,11 +340,16 @@ module.exports = function (HtmlCrawl) {
                 {
                     arg: 'imgarr',
                     type: 'boolean'
+                },
+                {
+                    arg: 'generic',
+                    type: 'boolean'
                 }
             ],
             returns: {
-                arg: 'openGraph',
-                type: 'Object'
+                arg: 'webdata',
+                type: 'object',
+                root: true
             }
         }
     );
@@ -313,7 +369,8 @@ module.exports = function (HtmlCrawl) {
             },
             returns: {
                 arg: 'imgs',
-                type: 'Array'
+                type: 'Array',
+                root: true
             }
         }
     );
