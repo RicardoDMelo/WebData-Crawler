@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var log = require('winston');
+var Helper = require('../helper');
 
 module.exports = function (obj, $, options) {
     if (!obj.icon) {
@@ -10,7 +11,7 @@ module.exports = function (obj, $, options) {
             obj.icon = $("link[rel='shortcut icon']").attr('href');
         }
     }
-
+    obj.icon = Helper.sanitizeUrl(obj.icon, options.url, true);
     return obj;
 
 }
