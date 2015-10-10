@@ -56,7 +56,7 @@ module.exports = function (HtmlCrawl) {
 
 
                     DataFinder.useFilter('filter-image', $, options).then(function (data) {
-                        callback(null, data);
+                        callback(null, data.image);
                         log.info('Data parsed, returning object');
                     });
 
