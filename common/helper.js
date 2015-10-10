@@ -1,7 +1,8 @@
 var urlParse = require('url-parse');
 
-module.exports = function (Helper) { 
-    Helper.sanitizeUrl = function (url, domainUrl, maintainProt) {
+module.exports = {
+
+    sanitizeUrl: function (url, domainUrl, maintainProt) {
         var urlp = new urlParse(url);
         var domainUrlp = new urlParse(domainUrl);
 
@@ -15,5 +16,13 @@ module.exports = function (Helper) {
             urlp.set('protocol', 'http:');
         }
         return urlp.href;
+    },
+
+    changeHttp: function (url) {
+        if (url && !url.match(/^http([s]?):\/\/.*/)) {
+            url = 'http://' + url;
+        }
+        return url;
     }
+
 }
