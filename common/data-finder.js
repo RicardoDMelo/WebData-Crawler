@@ -7,7 +7,7 @@ module.exports = {
     createObject: function ($, options) {
         var obj = {};
         var filters = {};
-        var filterpath = __dirname + '\\filters';
+        var filterpath = __dirname + '//filters';
         var pArr = [];
 
         require('fs').readdirSync(filterpath).forEach(function (file) {
@@ -23,7 +23,7 @@ module.exports = {
     useFilter: function (filter, $, options) {
         var obj = {};
         var filters = {};
-        var filterpath = __dirname + '\\filters';
+        var filterpath = __dirname + '//filters';
         var pArr = [];
 
         require('fs').readdirSync(filterpath).forEach(function (file) {
