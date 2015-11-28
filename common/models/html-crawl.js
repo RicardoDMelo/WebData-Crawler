@@ -16,6 +16,7 @@ module.exports = function(HtmlCrawl) {
 		request(url, function(error, response, body) {
 			if (!error && response.statusCode == 200) {
 				try {
+					log.info(body);
 					log.info('Data caught, parsing html');
 					if (generic === undefined) generic = true;
 					//Load JQuery

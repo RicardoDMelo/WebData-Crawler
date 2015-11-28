@@ -25,7 +25,16 @@ function getGenericImage(obj, $, options) {
 	var imgMax = undefined;
 	var imgCount = 0;
 	var imgQtd = $("img").length;
+	var checkCount = function() {
+		imgCount++;
+		log.info('Total: ' + imgQtd + '/ Count: ' + imgCount);
+		if (imgCount == imgQtd) {
+			if (!obj.image) obj.image = imgMax;
+			deferred.resolve(obj);
+		}
+	};
 	var deferred = q.defer();
+	if (imgQtd == 0) deferred.resolve(obj);
 	$("img").each(function(i, elem) {
 		var imgUrl = $(this).attr('src');
 		if (imgUrl) {
@@ -53,9 +62,7 @@ function getGenericImage(obj, $, options) {
 							try {
 								var ppc = 0;
 								var img = getImageSize(chunks);
-
 								var area = img.width * img.height;
-
 								//Check bigger image
 								if (area >= areaMax) {
 									imgMax = imgUrl;
@@ -70,41 +77,23 @@ function getGenericImage(obj, $, options) {
 									if (ppc <= 5)
 										obj.image = imgUrl;
 								}
-
 							} catch (ex) {
 								log.error('Image type unsupported.');
 							}
-
-							imgCount++;
-							if (imgCount == imgQtd) {
-								if (!obj.image) obj.image = imgMax;
-								deferred.resolve(obj);
-							}
+							checkCount();
 						});
 					});
 					req.on('error', function(e) {
-						imgCount++;
 						log.error(e);
-						if (imgCount == imgQtd) {
-							if (!obj.image) obj.image = imgMax;
-							deferred.resolve(obj);
-						}
+						checkCount();
 					});
 					break;
 				default:
-					imgCount++;
-					if (imgCount == imgQtd) {
-						if (!obj.image) obj.image = imgMax;
-						deferred.resolve(obj);
-					}
+					checkCount();
 					break;
 			}
 		} else {
-			imgCount++;
-			if (imgCount == imgQtd) {
-				if (!obj.image) obj.image = imgMax;
-				deferred.resolve(obj);
-			}
+			checkCount();
 		}
 	});
 	return deferred.promise;
