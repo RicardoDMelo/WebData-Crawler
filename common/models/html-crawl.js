@@ -51,9 +51,8 @@ module.exports = function(HtmlCrawl) {
 
 	HtmlCrawl.getImages = function(url, callback) {
 		log.info('Getting data from ' + url);
+		url = decodeURIComponent(url);
 		url = Helper.changeHttp(url);
-
-
 
 		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", {}, function(ph) {
 			ph.createPage(function(page) {
