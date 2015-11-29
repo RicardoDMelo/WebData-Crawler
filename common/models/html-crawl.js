@@ -34,8 +34,8 @@ module.exports = function(HtmlCrawl) {
 								};
 
 								DataFinder.createObject($, options).then(function(data) {
-									callback(null, data);
 									ph.exit();
+									callback(null, data);
 									log.info('Data parsed, returning object');
 								});
 							} catch (ex) {
@@ -72,6 +72,7 @@ module.exports = function(HtmlCrawl) {
 									url: url
 								};
 								DataFinder.useFilter('filter-image', $, options).then(function(data) {
+									ph.exit();
 									callback(null, data.image);
 									log.info('Data parsed, returning object');
 								});
