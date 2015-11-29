@@ -7,7 +7,6 @@ var DataFinder = require('../data-finder');
 var Helper = require('../helper');
 var phantom = require('phantom');
 
-//TODO sanitize img urls
 
 module.exports = function(HtmlCrawl) {
 	HtmlCrawl.getData = function(url, imgarr, generic, callback) {
