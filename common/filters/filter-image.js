@@ -9,7 +9,6 @@ var _ = require('underscore');
 module.exports = function(obj, $, options) {
 	if (!obj.image) {
 		if (options.imgarr !== true) {
-			obj.image = '';
 			obj = getImgByTag(obj, $, options);
 		} else {
 			obj.image = [];
@@ -27,7 +26,6 @@ function getGenericImage(obj, $, options) {
 	var imgQtd = $("img").length;
 	var checkCount = function() {
 		imgCount++;
-		log.info('Total: ' + imgQtd + '/ Count: ' + imgCount);
 		if (imgCount == imgQtd) {
 			if (!obj.image) obj.image = imgMax;
 			deferred.resolve(obj);
@@ -100,7 +98,6 @@ function getGenericImage(obj, $, options) {
 };
 
 var getImgByTag = function(obj, $, options) {
-
 	var deferred = q.defer();
 	if ($("meta").is("[property='og:image']")) {
 		obj.image = $("meta[property='og:image']").attr('content');

@@ -5,6 +5,7 @@ var _ = require('underscore');
 var log = require('winston');
 var DataFinder = require('../data-finder');
 var Helper = require('../helper');
+var phantom = require('phantom');
 
 //TODO sanitize img urls
 
@@ -13,64 +14,76 @@ module.exports = function(HtmlCrawl) {
 		log.info('Getting data from ' + url);
 		url = decodeURIComponent(url);
 		url = Helper.changeHttp(url);
-		request(url, function(error, response, body) {
-			if (!error && response.statusCode == 200) {
-				try {
-					log.info(body);
-					log.info('Data caught, parsing html');
-					if (generic === undefined) generic = true;
-					//Load JQuery
-					$ = cheerio.load(body);
-					var options = {
-						generic: generic,
-						imgarr: imgarr,
-						url: url
-					};
 
-					DataFinder.createObject($, options).then(function(data) {
-						callback(null, data);
-						log.info('Data parsed, returning object');
-					});
-				} catch (ex) {
-					log.error('Error on parsing data.', ex);
-					callback(null, 'Error on parsing data.');
-				}
-			} else {
-				log.error('Error on making request to ' + url, error);
-				callback(null, 'Error on making request to ' + url);
-			}
-		})
+		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", {}, function(ph) {
+			ph.createPage(function(page) {
+				page.open(url, function(status) {
+					log.info('Data caught, parsing html');
+					setTimeout(function() {
+						page.evaluate(function() {
+							return document.documentElement.innerHTML;
+						}, function(body) {
+							try {
+								if (generic === undefined) generic = false;
+								//Load JQuery
+								$ = cheerio.load(body);
+								var options = {
+									generic: generic,
+									imgarr: imgarr,
+									url: url
+								};
+
+								DataFinder.createObject($, options).then(function(data) {
+									callback(null, data);
+									ph.exit();
+									log.info('Data parsed, returning object');
+								});
+							} catch (ex) {
+								log.error('Error on parsing data.', ex);
+								callback(null, 'Error on parsing data.');
+							}
+						});
+					}, 0);
+				});
+			});
+		});
 	};
 
 	HtmlCrawl.getImages = function(url, callback) {
 		log.info('Getting data from ' + url);
 		url = Helper.changeHttp(url);
-		request(url, function(error, response, body) {
-			if (!error && response.statusCode == 200) {
-				try {
+
+
+
+		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", {}, function(ph) {
+			ph.createPage(function(page) {
+				page.open(url, function(status) {
 					log.info('Data caught, parsing html');
-					//Load JQuery
-					$ = cheerio.load(body);
-					var options = {
-						imgarr: true,
-						url: url
-					};
-
-
-					DataFinder.useFilter('filter-image', $, options).then(function(data) {
-						callback(null, data.image);
-						log.info('Data parsed, returning object');
-					});
-
-				} catch (ex) {
-					log.error('Error on parsing data.', ex);
-					callback(null, 'Error on parsing data.');
-				}
-			} else {
-				log.error('Error on making request to ' + url, error);
-				callback(null, 'Error on making request to ' + url);
-			}
-		})
+					setTimeout(function() {
+						page.evaluate(function() {
+							return document.documentElement.innerHTML;
+						}, function(body) {
+							try {
+								log.info('Data caught, parsing html');
+								//Load JQuery
+								$ = cheerio.load(body);
+								var options = {
+									imgarr: true,
+									url: url
+								};
+								DataFinder.useFilter('filter-image', $, options).then(function(data) {
+									callback(null, data.image);
+									log.info('Data parsed, returning object');
+								});
+							} catch (ex) {
+								log.error('Error on parsing data.', ex);
+								callback(null, 'Error on parsing data.');
+							}
+						});
+					}, 0);
+				});
+			});
+		});
 	};
 
 	HtmlCrawl.remoteMethod(
