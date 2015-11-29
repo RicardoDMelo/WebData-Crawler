@@ -4,7 +4,8 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="WebData Crawler : This crawler will try to get any data possible from a given url, like title, description and images associated.">
+    <meta name="description" content="This crawler will try to get any data possible from a given url, like title, description and images associated.">
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8">
     <meta property="og:image" content="http://webdatacrawler.com/images/logo-min.jpg">
     <meta property="og:description" content="This crawler will try to get any data possible from a given url, like title, description and images associated.">
     <meta property="og:title" content="WebData Crawler">
@@ -36,14 +37,14 @@
 <body>
 
     <!-- HEADER -->
-    <div id="header_wrap" class="outer">
+    <div id="header_wrap" class="outer" itemscope itemtype="http://schema.org/SoftwareApplication">
         <header class="inner">
 
-            <h1 id="project_title"><img class="logo" src="images/logo-min.jpg">WebData Crawler</h1>
-            <h2 id="project_tagline">The easiest way to get information about a website</h2>
+            <h1 id="project_title" itemprop="name"><img class="logo" src="images/logo-min.jpg">WebData Crawler</h1>
+            <h2 id="project_tagline" itemprop="description">The easiest way to get information about a website</h2>
 
-            <section id="downloads">
-                <a href="https://market.mashape.com/RicardoDMelo/webdata-crawler">
+            <section id="downloads" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <a href="https://market.mashape.com/RicardoDMelo/webdata-crawler" itemprop="url">
                     <span class="download-description">Use it on Mashape!</span>
                     <div class="mashape_link">Use it on Mashape!</div>
                 </a>
