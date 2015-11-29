@@ -4,7 +4,7 @@ var Helper = require('../helper');
 
 module.exports = function (obj, $, options) {
     if (!obj.icon) {
-        obj.icon = '';
+        obj.icon = "";
         if ($("link").is("[rel='icon']")) {
             obj.icon = $("link[rel='icon']").attr('href');
         } else if ($("link").is("[rel='shortcut icon']")) {
