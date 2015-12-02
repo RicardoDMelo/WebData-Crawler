@@ -52,6 +52,13 @@ function getGenericImage(obj, $, options) {
 				case 'png':
 				case 'gif':
 				case 'bmp':
+				case 'svg':
+				case 'JPG':
+				case 'JPEG':
+				case 'PNG':
+				case 'GIF':
+				case 'BMP':
+				case 'SVG':
 					var req = http.get(opts, function(response) {
 						var chunks = [];
 						response.on('data', function(chunk) {
@@ -117,11 +124,12 @@ var getImgByTag = function(obj, $, options) {
 	if (!obj.image) {
 		if (options.generic) {
 			getGenericImage(obj, $, options).then(function(res) {
-				res.image = Helper.sanitizeUrl(res.image, options.url, true);
+				if (res.image)
+					res.image = Helper.sanitizeUrl(res.image, options.url, true);
 				deferred.resolve(res);
 			}).catch(function(res) {
 				res.image = '';
-				deferred.reject(res);
+				deferred.resolve(res);
 			});
 		} else {
 			obj.image = '';

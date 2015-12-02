@@ -4,7 +4,7 @@ var log = require('winston');
 module.exports = function (obj, $, options) {
     if (!obj.title) {
         obj.title = '';
-        
+
         if ($("meta").is("[property='og:title']")) {
             obj.title = $("meta[property='og:title']").attr('content');
         } else if ($("meta").is("[name='twitter:title']")) {
