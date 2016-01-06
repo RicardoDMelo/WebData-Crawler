@@ -118,7 +118,7 @@ var getImgByTag = function(obj, $, options) {
 		obj.image = $("link[rel='apple-touch-icon-precomposed']").attr('href');
 	} else if ($("meta").is("[name='msapplication-TileImage']")) {
 		obj.image = $("meta[name='msapplication-TileImage']").attr('content');
-	} else if ($("article").has("img").length && generic) {
+	} else if ($("article").has("img").length && options.generic) {
 		obj.image = $("article").find("img").first().attr('src');
 	}
 	if (!obj.image) {
