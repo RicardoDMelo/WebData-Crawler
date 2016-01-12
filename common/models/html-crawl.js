@@ -13,6 +13,7 @@ module.exports = function(HtmlCrawl) {
 		log.info('Getting data from ' + url);
 		url = decodeURIComponent(url);
 		url = Helper.changeHttp(url);
+		if (!Helper.isValidUrl(url)) return false;
 
 		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", {}, function(ph) {
 			ph.createPage(function(page) {
@@ -52,6 +53,7 @@ module.exports = function(HtmlCrawl) {
 		log.info('Getting data from ' + url);
 		url = decodeURIComponent(url);
 		url = Helper.changeHttp(url);
+		if (!Helper.isValidUrl(url)) return false;
 
 		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", {}, function(ph) {
 			ph.createPage(function(page) {
