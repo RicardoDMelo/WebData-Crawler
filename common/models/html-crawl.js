@@ -26,7 +26,8 @@ module.exports = function(HtmlCrawl) {
 							try {
 								if (generic === undefined) generic = false;
 								//Load JQuery
-								$ = cheerio.load(body);
+
+								$ = cheerio.load(body, { decodeEntities: false });
 								var options = {
 									generic: generic,
 									imgarr: imgarr,

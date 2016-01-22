@@ -17,6 +17,5 @@ module.exports = function (obj, $, options) {
             obj.title = $("title").html();
         }
     }
-
     return obj;
 }
