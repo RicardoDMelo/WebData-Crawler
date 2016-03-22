@@ -15,7 +15,7 @@ module.exports = function(HtmlCrawl) {
 		url = Helper.changeHttp(url);
 		if (!Helper.isValidUrl(url)) return false;
 
-		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", {}, function(ph) {
+		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", "--web-security=false", {}, function(ph) {
 			ph.createPage(function(page) {
 				page.open(url, function(status) {
 					log.info('Data caught, parsing html');
