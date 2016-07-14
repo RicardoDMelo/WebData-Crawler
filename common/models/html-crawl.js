@@ -15,19 +15,20 @@ module.exports = function(HtmlCrawl) {
 		url = Helper.changeHttp(url);
 		if (!Helper.isValidUrl(url)) return false;
 
-		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", "--web-security=false", {}, function(ph) {
-			ph.createPage(function(page) {
-				page.open(url, function(status) {
+		phantom.create(["--load-images=no", "--ignore-ssl-errors=yes", "--web-security=false"]).then(function(ph) {
+			ph.createPage().then(function(page) {
+				page.open(url).then(function(status) {
 					log.info('Data caught, parsing html');
 					setTimeout(function() {
 						page.evaluate(function() {
 							return document.documentElement.innerHTML;
-						}, function(body) {
+						}).then(function(body) {
 							try {
 								if (generic === undefined) generic = false;
 								//Load JQuery
-
-								$ = cheerio.load(body, { decodeEntities: false });
+								$ = cheerio.load(body, {
+									decodeEntities: false
+								});
 								var options = {
 									generic: generic,
 									imgarr: imgarr,
@@ -56,14 +57,14 @@ module.exports = function(HtmlCrawl) {
 		url = Helper.changeHttp(url);
 		if (!Helper.isValidUrl(url)) return false;
 
-		phantom.create("--load-images=no", "--ignore-ssl-errors=yes", "--web-security=false", {}, function(ph) {
-			ph.createPage(function(page) {
-				page.open(url, function(status) {
+		phantom.create(["--load-images=no", "--ignore-ssl-errors=yes", "--web-security=false"]).then(function(ph) {
+			ph.createPage().then(function(page) {
+				page.open(url).then(function(status) {
 					log.info('Data caught, parsing html');
 					setTimeout(function() {
 						page.evaluate(function() {
 							return document.documentElement.innerHTML;
-						}, function(body) {
+						}).then(function(body) {
 							try {
 								log.info('Data caught, parsing html');
 								//Load JQuery
