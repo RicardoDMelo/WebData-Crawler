@@ -19,33 +19,52 @@ module.exports = function(HtmlCrawl) {
 			ph.createPage().then(function(page) {
 				page.open(url).then(function(status) {
 					log.info('Data caught, parsing html');
-					setTimeout(function() {
-						page.evaluate(function() {
-							return document.documentElement.innerHTML;
-						}).then(function(body) {
-							try {
-								if (generic === undefined) generic = false;
-								//Load JQuery
-								$ = cheerio.load(body, {
-									decodeEntities: false
-								});
-								var options = {
-									generic: generic,
-									imgarr: imgarr,
-									url: url
-								};
 
-								DataFinder.createObject($, options).then(function(data) {
-									ph.exit();
-									callback(null, data);
-									log.info('Data parsed, returning object');
-								});
-							} catch (ex) {
-								log.error('Error on parsing data.', ex);
-								callback(null, 'Error on parsing data.');
-							}
+					function onPageReady() {
+						setTimeout(function() {
+							page.evaluate(function() {
+								return document.documentElement.innerHTML;
+							}).then(function(body) {
+								try {
+									if (generic === undefined) generic = false;
+									//Load JQuery
+									$ = cheerio.load(body, {
+										decodeEntities: false
+									});
+									var options = {
+										generic: generic,
+										imgarr: imgarr,
+										url: url
+									};
+
+									DataFinder.createObject($, options).then(function(data) {
+										ph.exit();
+										callback(null, data);
+										log.info('Data parsed, returning object');
+									});
+								} catch (ex) {
+									log.error('Error on parsing data.', ex);
+									callback(null, 'Error on parsing data.');
+								}
+							});
+						}, 1000);
+					}
+
+					function checkReadyState() {
+						setTimeout(function() {
+							page.evaluate(function() {
+								return document.readyState;
+							}).then(function(readyState) {
+								if ("complete" === readyState) {
+									onPageReady();
+								} else {
+									checkReadyState();
+								}
+							});
 						});
-					}, 0);
+					}
+
+					checkReadyState();
 				});
 			});
 		});
@@ -61,29 +80,48 @@ module.exports = function(HtmlCrawl) {
 			ph.createPage().then(function(page) {
 				page.open(url).then(function(status) {
 					log.info('Data caught, parsing html');
-					setTimeout(function() {
-						page.evaluate(function() {
-							return document.documentElement.innerHTML;
-						}).then(function(body) {
-							try {
-								log.info('Data caught, parsing html');
-								//Load JQuery
-								$ = cheerio.load(body);
-								var options = {
-									imgarr: true,
-									url: url
-								};
-								DataFinder.useFilter('filter-image', $, options).then(function(data) {
-									ph.exit();
-									callback(null, data.image);
-									log.info('Data parsed, returning object');
-								});
-							} catch (ex) {
-								log.error('Error on parsing data.', ex);
-								callback(null, 'Error on parsing data.');
+
+					function onPageReady() {
+						setTimeout(function() {
+							page.evaluate(function() {
+								return document.documentElement.innerHTML;
+							}).then(function(body) {
+								try {
+									log.info('Data caught, parsing html');
+									//Load JQuery
+									$ = cheerio.load(body);
+									var options = {
+										imgarr: true,
+										url: url
+									};
+									DataFinder.useFilter('filter-image', $, options).then(function(data) {
+										ph.exit();
+										callback(null, data.image);
+										log.info('Data parsed, returning object');
+									});
+								} catch (ex) {
+									log.error('Error on parsing data.', ex);
+									callback(null, 'Error on parsing data.');
+								}
+							});
+						}, 1000);
+					}
+
+					function checkReadyState() {
+						setTimeout(function() {
+							var readyState = page.evaluate(function() {
+								return document.readyState;
+							});
+
+							if ("complete" === readyState) {
+								onPageReady();
+							} else {
+								checkReadyState();
 							}
 						});
-					}, 0);
+					}
+
+					checkReadyState();
 				});
 			});
 		});
