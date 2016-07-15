@@ -20,7 +20,7 @@ module.exports = function(HtmlCrawl) {
 				page.open(url).then(function(status) {
 					log.info('Data caught, parsing html');
 
-					function onPageReady() {
+					function onPageReadyWebdata() {
 						setTimeout(function() {
 							page.evaluate(function() {
 								return document.documentElement.innerHTML;
@@ -50,28 +50,28 @@ module.exports = function(HtmlCrawl) {
 						}, 1000);
 					}
 
-					function checkReadyState() {
+					function checkReadyStateWebdata() {
 						setTimeout(function() {
 							page.evaluate(function() {
 								return document.readyState;
 							}).then(function(readyState) {
 								if ("complete" === readyState) {
-									onPageReady();
+									onPageReadyWebdata();
 								} else {
-									checkReadyState();
+									checkReadyStateWebdata();
 								}
 							});
 						});
 					}
 
-					checkReadyState();
+					checkReadyStateWebdata();
 				});
 			});
 		});
 	};
 
 	HtmlCrawl.getImages = function(url, callback) {
-		log.info('Getting data from ' + url);
+		log.info('Getting images from ' + url);
 		url = decodeURIComponent(url);
 		url = Helper.changeHttp(url);
 		if (!Helper.isValidUrl(url)) return false;
@@ -79,15 +79,15 @@ module.exports = function(HtmlCrawl) {
 		phantom.create(["--load-images=no", "--ignore-ssl-errors=yes", "--web-security=false"]).then(function(ph) {
 			ph.createPage().then(function(page) {
 				page.open(url).then(function(status) {
-					log.info('Data caught, parsing html');
+					log.info('Images caught, parsing html');
 
-					function onPageReady() {
+					function onPageReadyImage() {
 						setTimeout(function() {
 							page.evaluate(function() {
 								return document.documentElement.innerHTML;
 							}).then(function(body) {
+								
 								try {
-									log.info('Data caught, parsing html');
 									//Load JQuery
 									$ = cheerio.load(body);
 									var options = {
@@ -97,31 +97,31 @@ module.exports = function(HtmlCrawl) {
 									DataFinder.useFilter('filter-image', $, options).then(function(data) {
 										ph.exit();
 										callback(null, data.image);
-										log.info('Data parsed, returning object');
+										log.info('Images parsed, returning object');
 									});
 								} catch (ex) {
-									log.error('Error on parsing data.', ex);
-									callback(null, 'Error on parsing data.');
+									log.error('Error on parsing images.', ex);
+									callback(null, 'Error on parsing images.');
 								}
 							});
 						}, 1000);
 					}
 
-					function checkReadyState() {
+					function checkReadyStateImage() {
 						setTimeout(function() {
-							var readyState = page.evaluate(function() {
+							page.evaluate(function() {
 								return document.readyState;
+							}).then(function(readyState) {
+								if ("complete" === readyState) {
+									onPageReadyImage();
+								} else {
+									checkReadyStateImage();
+								}
 							});
-
-							if ("complete" === readyState) {
-								onPageReady();
-							} else {
-								checkReadyState();
-							}
 						});
 					}
 
-					checkReadyState();
+					checkReadyStateImage();
 				});
 			});
 		});
