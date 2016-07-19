@@ -33,6 +33,8 @@ function getGenericImage(obj, $, options) {
 	};
 	var deferred = q.defer();
 	if (imgQtd == 0) deferred.resolve(obj);
+
+
 	$("img").each(function(i, elem) {
 		var imgUrl = $(this).attr('src');
 		if (imgUrl) {
@@ -106,21 +108,9 @@ function getGenericImage(obj, $, options) {
 
 var getImgByTag = function(obj, $, options) {
 	var deferred = q.defer();
-	if ($("meta").is("[property='og:image']")) {
-		obj.image = $("meta[property='og:image']").attr('content');
-	} else if ($("meta").is("[property='twitter:image']")) {
-		obj.image = $("meta[property='twitter:image']").attr('content');
-	} else if ($("link").is("[rel='img_src']")) {
-		obj.image = $("link[rel='image_src']").attr('href');
-	} else if ($("link").is("[rel='apple-touch-icon']")) {
-		obj.image = $("link[rel='apple-touch-icon']").attr('href');
-	} else if ($("link").is("[rel='apple-touch-icon-precomposed']")) {
-		obj.image = $("link[rel='apple-touch-icon-precomposed']").attr('href');
-	} else if ($("meta").is("[name='msapplication-TileImage']")) {
-		obj.image = $("meta[name='msapplication-TileImage']").attr('content');
-	} else if ($("article").has("img").length && options.generic) {
-		obj.image = $("article").find("img").first().attr('src');
-	}
+
+	obj.image = getUrlFromTag($);
+
 	if (!obj.image) {
 		if (options.generic) {
 			getGenericImage(obj, $, options).then(function(res) {
@@ -143,7 +133,34 @@ var getImgByTag = function(obj, $, options) {
 	return deferred.promise;
 };
 
+var getUrlFromTag = function($) {
+	if ($("meta").is("[property='og:image']")) {
+		return $("meta[property='og:image']").attr('content');
+	} else if ($("meta").is("[property='twitter:image']")) {
+		return $("meta[property='twitter:image']").attr('content');
+	} else if ($("link").is("[rel='img_src']")) {
+		return $("link[rel='image_src']").attr('href');
+	} else if ($("link").is("[rel='apple-touch-icon']")) {
+		return $("link[rel='apple-touch-icon']").attr('href');
+	} else if ($("link").is("[rel='apple-touch-icon-precomposed']")) {
+		return $("link[rel='apple-touch-icon-precomposed']").attr('href');
+	} else if ($("meta").is("[name='msapplication-TileImage']")) {
+		return $("meta[name='msapplication-TileImage']").attr('content');
+	} else if ($("article").has("img").length && options.generic) {
+		return $("article").find("img").first().attr('src');
+	}
+	return '';
+}
+
+
 var getImgArr = function(obj, $, options) {
+
+	var firstUrl = getUrlFromTag($);
+	if (firstUrl != '') {
+		if (!obj.image) obj.image = [];
+		obj.image.push(firstUrl);
+	}
+
 	$("img").each(function(i, elem) {
 		var imgUrl = $(this).attr('src');
 		if (imgUrl) {
