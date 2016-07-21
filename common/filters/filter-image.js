@@ -133,7 +133,7 @@ var getImgByTag = function(obj, $, options) {
 	return deferred.promise;
 };
 
-var getUrlFromTag = function($) {
+var getUrlFromTag = function($, options) {
 	if ($("meta").is("[property='og:image']")) {
 		return $("meta[property='og:image']").attr('content');
 	} else if ($("meta").is("[property='twitter:image']")) {
@@ -155,7 +155,7 @@ var getUrlFromTag = function($) {
 
 var getImgArr = function(obj, $, options) {
 
-	var firstUrl = getUrlFromTag($);
+	var firstUrl = getUrlFromTag($, options);
 	if (firstUrl != '') {
 		if (!obj.image) obj.image = [];
 		obj.image.push(firstUrl);
