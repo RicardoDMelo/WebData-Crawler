@@ -109,7 +109,7 @@ function getGenericImage(obj, $, options) {
 var getImgByTag = function(obj, $, options) {
 	var deferred = q.defer();
 
-	obj.image = getUrlFromTag($);
+	obj.image = getUrlFromTag($, options);
 
 	if (!obj.image) {
 		if (options.generic) {
