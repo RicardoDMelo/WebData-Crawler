@@ -26,3 +26,7 @@ boot(app, __dirname, function (err) {
     if (require.main === module)
         app.start();
 });
+
+process.on('uncaughtException', function (err) {
+	console.log('Caught exception: ' + err);
+});
