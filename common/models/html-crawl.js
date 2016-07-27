@@ -24,7 +24,7 @@ module.exports = function(HtmlCrawl) {
 			})
 			.then(function(pageResponse) {
 				page = pageResponse;
-				page.setting('resourceTimeout', 10000);
+				page.setting('resourceTimeout', 2500);
 				return page.open(url);
 			})
 			.then(function(status) {
@@ -97,7 +97,7 @@ module.exports = function(HtmlCrawl) {
 			})
 			.then(function(pageResponse) {
 				page = pageResponse;
-				page.setting('resourceTimeout', 10000);
+				page.setting('resourceTimeout', 2500);
 				return page.open(url);
 			})
 			.then(function(status) {
