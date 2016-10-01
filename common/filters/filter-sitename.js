@@ -3,6 +3,7 @@ var log = require('winston');
 var urlParse = require('url-parse');
 
 module.exports = function(obj, $, options) {
+	log.info('Starting sitename filter.');
 	if (!obj.sitename) {
 		obj.sitename = '';
 

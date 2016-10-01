@@ -7,6 +7,7 @@ var urlLib = require('url');
 var _ = require('underscore');
 
 module.exports = function(obj, $, options) {
+	log.info('Starting image filter.');
 	if (!obj.image) {
 		if (options.imgarr !== true) {
 			obj = getImgByTag(obj, $, options);

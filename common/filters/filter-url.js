@@ -2,6 +2,7 @@ var _ = require('underscore');
 var log = require('winston');
 
 module.exports = function (obj, $, options) {
+    log.info('Starting url filter.');
     if (!obj.url) {
         obj.url = '';
 

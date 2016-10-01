@@ -3,6 +3,7 @@ var log = require('winston');
 var Helper = require('../helper');
 
 module.exports = function (obj, $, options) {
+    log.info('Starting icon filter.');
     if (!obj.icon) {
         obj.icon = "";
         if ($("link").is("[rel='icon']")) {
