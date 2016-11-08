@@ -6,6 +6,7 @@ var express = require('express');
 var log = require('winston');
 
 var app = express();
+var port = (process.env.PORT || 3000);
 
 //METHODS SUPPORTED
 app.get('/webdata', function(req, res) {
@@ -25,7 +26,7 @@ app.get('/images', function(req, res) {
 });
 
 //STARTING SERVER
-app.listen(80, function () {
+app.listen(port, function () {
   log.info('Webdata Crawler listening on port 3000!');
 });
 
