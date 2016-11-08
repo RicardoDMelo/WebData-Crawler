@@ -1,4 +1,3 @@
-var request = require('request');
 var cheerio = require('cheerio');
 var http = require('http');
 var _ = require('underscore');
@@ -7,9 +6,8 @@ var DataFinder = require('../data-finder');
 var Helper = require('../helper');
 var phantom = require('phantom');
 
-
-module.exports = function(HtmlCrawl) {
-	HtmlCrawl.getData = function(url, imgarr, generic, callback) {
+module.exports = {
+	getData: function(url, imgarr, generic, callback) {
 		log.info('Getting data from ' + url);
 		url = decodeURIComponent(url);
 		url = Helper.changeHttp(url);
@@ -49,12 +47,12 @@ module.exports = function(HtmlCrawl) {
 
 								DataFinder.createObject($, options).then(function(data) {
 									ph.exit();
-									callback(null, data);
+									callback(data);
 									log.info('Data parsed, returning object');
 								});
 							} catch (ex) {
 								log.error('Error on parsing data.', ex);
-								callback(null, 'Error on parsing data.');
+								callback('Error on parsing data.');
 							}
 						});
 					}, 1000);
@@ -80,9 +78,8 @@ module.exports = function(HtmlCrawl) {
 				log.error(error);
 				ph.exit();
 			});
-	};
-
-	HtmlCrawl.getImages = function(url, callback) {
+	},
+	getImages: function(url, callback) {
 		log.info('Getting images from ' + url);
 		url = decodeURIComponent(url);
 		url = Helper.changeHttp(url);
@@ -118,12 +115,12 @@ module.exports = function(HtmlCrawl) {
 								};
 								DataFinder.useFilter('filter-image', $, options).then(function(data) {
 									ph.exit();
-									callback(null, data.image);
+									callback(data.image);
 									log.info('Images parsed, returning object');
 								});
 							} catch (ex) {
 								log.error('Error on parsing images.', ex);
-								callback(null, 'Error on parsing images.');
+								callback('Error on parsing images.');
 							}
 						});
 					}, 1000);
@@ -148,51 +145,5 @@ module.exports = function(HtmlCrawl) {
 				log.error(error);
 				ph.exit();
 			});
-	};
-
-	HtmlCrawl.remoteMethod(
-		'getData', {
-			http: {
-				path: '/webdata',
-				verb: 'get'
-			},
-			accepts: [{
-				arg: 'url',
-				type: 'string'
-			}, {
-				arg: 'imgarr',
-				type: 'boolean'
-			}, {
-				arg: 'generic',
-				type: 'boolean'
-			}],
-			returns: {
-				arg: 'webdata',
-				type: 'object',
-				root: true
-			}
-		}
-	);
-
-	HtmlCrawl.remoteMethod(
-		'getImages', {
-			http: {
-				path: '/images',
-				verb: 'get'
-			},
-			accepts: {
-				arg: 'url',
-				type: 'string',
-				http: {
-					source: 'query'
-				}
-			},
-			returns: {
-				arg: 'imgs',
-				type: 'Array',
-				root: true
-			}
-		}
-	);
-
+	}
 };

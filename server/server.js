@@ -1,32 +1,34 @@
-var loopback = require('loopback');
-var boot = require('loopback-boot');
+//var loopback = require('loopback');
+//var boot = require('loopback-boot');
 var logger = require('./log.js');
+var crawler = require('../common/models/html-crawl');
+var express = require('express');
+var log = require('winston');
 
-var app = module.exports = loopback();
+var app = express();
 
-app.start = function () {
-    // start the web server
-    return app.listen(function () {
-        app.emit('started');
-        var baseUrl = app.get('url').replace(/\/$/, '');
-        console.log('Web server listening at: %s', baseUrl);
-        if (app.get('loopback-component-explorer')) {
-            var explorerPath = app.get('loopback-component-explorer').mountPath;
-            console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
-        }
-    });
-};
-
-// Bootstrap the application, configure models, datasources and middleware.
-// Sub-apps like REST API are mounted via boot scripts.
-boot(app, __dirname, function (err) {
-    if (err) throw err;
-
-    // start the server if `$ node server.js`
-    if (require.main === module)
-        app.start();
+//METHODS SUPPORTED
+app.get('/webdata', function(req, res) {
+    log.info('Called webdata method with: %s', req.url);
+    var callback = function(result) {
+        res.send(result);
+    }
+    crawler.getData(req.query.url, req.query.imgarr, req.query.generic, callback);
 });
 
-process.on('uncaughtException', function (err) {
-	console.log('Caught exception: ' + err);
+app.get('/images', function(req, res) {
+    log.info('Called images method with: %s', req.url);
+    var callback = function(result) {
+        res.send(result);
+    }
+    crawler.getImages(req.query.url, callback);
+});
+
+//STARTING SERVER
+app.listen(80, function () {
+  log.info('Webdata Crawler listening on port 3000!');
+});
+
+process.on('uncaughtException', function(err) {
+    log.info('Caught exception: ' + err);
 });

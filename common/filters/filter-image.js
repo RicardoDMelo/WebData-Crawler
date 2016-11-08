@@ -1,15 +1,12 @@
 var log = require('winston');
 var Helper = require('../helper');
-var http = require('http');
-var sizeOf = require('image-size');
 var q = require('q');
-var urlLib = require('url');
 var _ = require('underscore');
 
 module.exports = function(obj, $, options) {
 	log.info('Starting image filter.');
 	if (!obj.image) {
-		if (options.imgarr !== true) {
+		if (options.imgarr !== 'true') {
 			obj = getImgByTag(obj, $, options);
 		} else {
 			obj.image = [];
@@ -35,73 +32,14 @@ function getGenericImage(obj, $, options) {
 	var deferred = q.defer();
 	if (imgQtd == 0) deferred.resolve(obj);
 
-
 	$("img").each(function(i, elem) {
 		var imgUrl = $(this).attr('src');
 		if (imgUrl) {
-			imgUrl = Helper.sanitizeUrl(imgUrl, options.url);
-			var opts = urlLib.parse(imgUrl);
-
-			// Use a regular expression to trim everything before final dot
-			var extension = imgUrl.replace(/^.*\./, '');
-			if (extension == imgUrl) {
-				extension = '';
-			} else {
-				extension = extension.toLowerCase();
+			imgUrl = Helper.sanitizeUrl(imgUrl, options.url, true);
+			if (!obj.image) {
+				obj.image = imgUrl;
+				deferred.resolve(obj);
 			}
-			switch (extension) {
-				case 'jpg':
-				case 'jpeg':
-				case 'png':
-				case 'gif':
-				case 'bmp':
-				case 'svg':
-				case 'JPG':
-				case 'JPEG':
-				case 'PNG':
-				case 'GIF':
-				case 'BMP':
-				case 'SVG':
-					var req = http.get(opts, function(response) {
-						var chunks = [];
-						response.on('data', function(chunk) {
-							chunks.push(chunk);
-						}).on('end', function() {
-							try {
-								var ppc = 0;
-								var img = getImageSize(chunks);
-								var area = img.width * img.height;
-								//Check bigger image
-								if (area >= areaMax) {
-									imgMax = imgUrl;
-									areaMax = area;
-
-									if (img.width > img.height)
-										ppc = img.width / img.height;
-									else
-										ppc = img.height / img.width;
-
-									//Maximum 5:1 relationship
-									if (ppc <= 5)
-										obj.image = imgUrl;
-								}
-							} catch (ex) {
-								log.error('Image type unsupported.');
-							}
-							checkCount();
-						});
-					});
-					req.on('error', function(e) {
-						log.error(e);
-						checkCount();
-					});
-					break;
-				default:
-					checkCount();
-					break;
-			}
-		} else {
-			checkCount();
 		}
 	});
 	return deferred.promise;
@@ -159,7 +97,7 @@ var getImgArr = function(obj, $, options) {
 	var firstUrl = getUrlFromTag($, options);
 	if (firstUrl != '') {
 		if (!obj.image) obj.image = [];
-		obj.image.push(firstUrl);
+		obj.image.push(Helper.sanitizeUrl(firstUrl, options.url, true));
 	}
 
 	$("img").each(function(i, elem) {
@@ -173,11 +111,4 @@ var getImgArr = function(obj, $, options) {
 
 	obj.image = _.uniq(obj.image);
 	return obj;
-};
-
-//Get image properties
-var getImageSize = function(chunks) {
-	var buffer = Buffer.concat(chunks);
-	var img = sizeOf(buffer);
-	return img;
 };

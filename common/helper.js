@@ -1,19 +1,19 @@
 var urlParse = require('url-parse');
+var log = require('winston');
 
 module.exports = {
 
-	sanitizeUrl: function(url, domainUrl, maintainProt) {
-		if (url != '') {
+	sanitizeUrl: function(url, domainUrl, maintainPort) {
+		if (url != '') {			
 			var urlp = new urlParse(url);
 			var domainUrlp = new urlParse(domainUrl);
 
 			//find & remove protocol (http, ftp, etc.) and get domain
-
 			if (urlp.protocol != 'http:' && urlp.protocol != 'https:' && url.indexOf('//') != 0) {
-				if (!urlp.protocol && url.indexOf('./') == -1 && url.indexOf('/') != 0) urlp = new urlParse('./' + url);
+				if (!urlp.protocol && url.indexOf('./') == -1 && url.indexOf('/') != 0) urlp = new urlParse('/' + url);
 				urlp.set('hostname', domainUrlp.hostname);
 			}
-			if ((urlp.protocol == 'https:' && maintainProt !== true) || !urlp.protocol) {
+			if ((urlp.protocol == 'https:' && maintainPort !== true) || !urlp.protocol) {
 				urlp.set('protocol', 'http:');
 			}
 			return urlp.href;
