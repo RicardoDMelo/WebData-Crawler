@@ -47,7 +47,6 @@ module.exports = {
 
 								DataFinder.createObject($, options).then(function(data) {
 									ph.exit();
-									data.html = body;
 									callback(data);
 									log.info('Data parsed, returning object');
 								});
