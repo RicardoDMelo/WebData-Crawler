@@ -110,7 +110,7 @@ module.exports = {
 								//Load JQuery
 								$ = cheerio.load(body);
 								var options = {
-									imgarr: true,
+									imgarr: 'true',
 									url: url
 								};
 								DataFinder.useFilter('filter-image', $, options).then(function(data) {
