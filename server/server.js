@@ -2,11 +2,13 @@
 //var boot = require('loopback-boot');
 var logger = require('./log.js');
 var crawler = require('../common/models/html-crawl');
+var cors = require('cors')
 var express = require('express');
 var log = require('winston');
 
 var app = express();
 var port = (process.env.PORT || 3000);
+app.use(cors());
 
 //METHODS SUPPORTED
 app.get('/webdata', function(req, res) {
